@@ -22,7 +22,7 @@ def ensure_ufw_installed():
         else:
             exit()
     else:
-        exit()
+        ensure_iptables_persistent_packages_removed()
 
 
 def is_iptables_persistent_installed():
@@ -38,7 +38,7 @@ def ensure_iptables_persistent_packages_removed():
         else:
             exit()
     else:
-        exit()
+        enable_firewall_sequence()
 
 
 def is_ufw_tcp_rule_enabled():
@@ -110,8 +110,6 @@ def enable_firewall_sequence():
 
 def main():
     print(ensure_ufw_installed())
-    print(enable_firewall_sequence())
-    print(ensure_iptables_persistent_packages_removed())
 
     # if is_ufw_installed() == False:
     #     usr_ufw_input=input("UFW is not installed do you want to install it [y/n] ")
