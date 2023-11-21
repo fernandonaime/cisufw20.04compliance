@@ -80,7 +80,7 @@ def enable_firewall_sequence():
     os.system("systemctl is-active ufw")
     # Run the following command to verify ufw is active
     print(" \n ...verifying ufw is active")
-    os.sytem("ufw status")
+    os.system("ufw status")
     # following command to unmask the ufw daemon
     print("\n ...unmasking ufw daemon")
     os.system("systemctl unmask ufw.service")
@@ -110,7 +110,7 @@ def enable_firewall_sequence():
 
 def main():
     print(ensure_ufw_installed())
-    enable_firewall_sequence()
+    prin(enable_firewall_sequence())
     print(ensure_iptables_persistent_packages_removed())
 
     # if is_ufw_installed() == False:
