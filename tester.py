@@ -110,7 +110,7 @@ def enable_firewall_sequence():
 
 def main():
     print(ensure_ufw_installed())
-    prin(enable_firewall_sequence())
+    print(enable_firewall_sequence())
     print(ensure_iptables_persistent_packages_removed())
 
     # if is_ufw_installed() == False:
