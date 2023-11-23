@@ -25,6 +25,7 @@ def is_ufw_installed():
 def ensure_ufw_installed():
     if not is_ufw_installed():
         var = input("\nDo you want to install the Host firewall [Y/n] ?")
+        var.lower()
         if var == 'y':
             os.system("apt install ufw")
             print('\nufw got installed now')
@@ -46,11 +47,12 @@ def is_iptables_persistent_installed():
 def ensure_iptables_persistent_packages_removed():
     if is_iptables_persistent_installed():
         var = input("\n ...do you want to remove the iptable-persistant")
+        var.lower()
         if var == 'y':
             os.system("apt purge iptables-persistent")
             print('\n ...iptables_persistant_packages_removed')
         else:
-            exit()
+            print("configuration skipped")
     else:
         print("\n ...you have already removed the persistant tables")
 
@@ -87,7 +89,8 @@ def is_ufw_tcp_rule_enabled():
 
 def enable_firewall_sequence():
     if not is_ufw_tcp_rule_enabled():
-        var = input("\n UFW is not enabled, do you want to enable it [Y/N] ")
+        var = input("\nUFW is not enabled, do you want to enable it [Y/N] ")
+        var.lower()
         if var == 'y':
             print("\nufw will flush its chains.This is good in maintaining a consistent state, but it may drop existing connections (eg ssh)")
             os.system("ufw allow proto tcp from any to any port 22")
@@ -123,6 +126,7 @@ def ensure_loopback_configured():
            "(127.0.0.0/8 for IPv4 and ::1/128 for IPv6) traffic should be seen, all other interfaces"
            "should ignore traffic on this network as an anti-spoofing measure.")
     var = input("\n do you want to proceed [Y/n] ?")
+    var.lower()
     if var == 'y':
         os.system("ufw allow in on lo")
         os.system("ufw allow out on lo")
@@ -140,6 +144,7 @@ def ensure_ufw_outbound_connections():
     var = input("\n Do you want to configure your ufw outbound connections if this set of rules are not in place for new outbound connections all"
                 "packets will be dropped by the"
                 "default policy preventing network usage., [Y/n]")
+    var.lower()
     if var == 'y':
         var = input("\n PLease verify all the rules whether it matches all the site policies")
         if var == 'y':
@@ -154,26 +159,31 @@ def ensure_ufw_outbound_connections():
 
 def get_allow_deny():
     allw_dny = input("allow or deny: ")
+    allw_dny.lower()
     return allw_dny
 
 
 def get_bounds():
     bounds = input("inbound or outbound: ")
+    bounds.lower()
     return bounds
 
 
 def get_network_address():
     netadd = input("enter network address: ")
+    netadd.lower()
     return netadd
 
 
 def get_proto():
     proto = input("enter protocol tcp or udp: ")
+    proto.lower()
     return proto
 
 
 def get_mask():
     mask = input("enter the whole number value of the subnet mask: ")
+    mask.lower()
     return mask
 
 
@@ -201,10 +211,10 @@ def ensure_rules_on_ports(script_path):
         proto = get_proto()
         mask = get_mask()
         rule = ("ufw " + allow + " from " + netad + "/" + mask + " to any proto " + proto + " port " + str(port_number))
-        print(rule, '\n \n hit enterto continue [enter]')
+        print(rule, '\n \nhit enterto continue [enter]')
         input()
         os.system(rule)
-        input("\n Hit enter to continue [enter]")
+        input("\nHit enter to continue [enter]")
 
     else:
         # If there was an error, print the error message
@@ -217,6 +227,7 @@ def is_ufw_deny_policy():
     var=input("\n \n ================================default port deny policy==================================="
           "\n Any port and protocol not explicitly allowed will be blocked."
           "\nDo you want to configure default deny policy? [Y/n] ")
+    var.lower()
     if var=='y':
         print("...remediation process...")
         print("\n allowing Git...")
