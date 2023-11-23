@@ -193,7 +193,7 @@ def ensure_rules_on_ports(script_path):
 
         p_no = int(input("please enter the index number of the intended port to be configured: "))
         port_number = ports_list[p_no]
-        print("\nYour configuration will be commanded according to this format "
+        print("\nYour configuration will be commanded according to this format"
               "ufw-allow-from-192.168.1.0/24-to-any-proto-tcp-port-443" "\n \n" "Press enter to continue [enter]: ")
         input()
         allow = get_allow_deny()
@@ -201,10 +201,10 @@ def ensure_rules_on_ports(script_path):
         proto = get_proto()
         mask = get_mask()
         rule = ("ufw " + allow + " from " + netad + "/" + mask + " to any proto " + proto + " port " + str(port_number))
-        print(rule, '\n \nhit enterto continue [enter]')
+        print(rule, '\n \n hit enterto continue [enter]')
         input()
         os.system(rule)
-        input("\nHit enter to continue [enter]")
+        input("\n Hit enter to continue [enter]")
 
     else:
         # If there was an error, print the error message
@@ -215,7 +215,7 @@ def ensure_rules_on_ports(script_path):
 
 def is_ufw_deny_policy():
     var=input("\n \n ================================default port deny policy==================================="
-          "\nAny port and protocol not explicitly allowed will be blocked."
+          "\n Any port and protocol not explicitly allowed will be blocked."
           "\nDo you want to configure default deny policy? [Y/n] ")
     if var=='y':
         print("...remediation process...")
@@ -244,7 +244,6 @@ def ensure_port_deny_policy():
     os.system("ufw default deny outgoing")
     print("\n denying default routing...")
     os.system("ufw default deny routed")
-    print("\nExiting the tool...")
 # ufw default deny incoming
 # ufw default deny outgoing
 # ufw default deny routed
