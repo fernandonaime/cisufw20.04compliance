@@ -263,8 +263,8 @@ def ensure_port_deny_policy():
 
 def all_ufw_hardening_controls():
     ensure_ufw_installed()
-    enable_firewall_sequence()
     ensure_iptables_persistent_packages_removed()
+    enable_firewall_sequence()
     script_path = 'ufwropnprts.sh'
     ensure_rules_on_ports(script_path)
     ensure_port_deny_policy()
