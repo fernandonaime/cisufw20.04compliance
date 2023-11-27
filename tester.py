@@ -328,7 +328,6 @@ Your configuration will follow this format:
 """)
     var=input("Do you want to continue configuring firewall rules for all ports [Y/n]: ").lower()
     if var == 'y'or'yes'or'':
-        input()
         port_number=get_port_number(script_path)
         allow = get_allow_deny()
         netad = get_network_address()
