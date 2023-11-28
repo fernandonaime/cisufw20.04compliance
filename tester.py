@@ -394,7 +394,7 @@ Do you want to configure the default deny policy? [Y/n]: """)
     elif var == 'n' or var == 'no':
         line="User skipped configuring default deny policy"
         log_changes(line)
-        print("\n exiting port deny policy")
+        print("\n...exiting port deny policy")
 
 
 
