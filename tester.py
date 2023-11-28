@@ -13,17 +13,21 @@ def log_setup():
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if not os.path.exists(log_file_path):
         with open(log_file_path, "w") as log_file:
-            log_file.write(f"{current_datetime} - LOG CREATED.")
+            log_file.write(f"-----------------------------------------------------------------------\n")
+            log_file.write(f"                           Host Firewall Compliance                         \n")
+            log_file.write(f"-----------------------------------------------------------------------\n")
+
+            log_file.write(f"{current_datetime} - ============ SCRIPT INITIATION ============\n")
     else:
         with open(log_file_path, "a") as log_file:
-            log_file.write(f"{current_datetime} - PROGRAM EXECUTION")
+            log_file.write(f"\n{current_datetime} - ============ PROGRAM EXECUTION ============\n")
 
 
 def log_changes(changes):
     log_file_path = "script_log.txt"
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(log_file_path, "a") as log_file:
-            log_file.write(f"Changes made: {changes}")
+            log_file.write(f"\nChanges made: {changes}")
 
 
 
