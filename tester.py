@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 
 
+
 # --------------------------------------------------------------------------------------------------
 def log_setup():
     log_file_path = "script_log.txt"
@@ -73,7 +74,7 @@ to conflicts.
 
 def ensure_iptables_persistent_packages_removed():
     if is_iptables_persistent_installed():
-        var = input("\n ...do you want to remove the iptable-persistant [Y/n]: ")
+        var = input("\ndo you want to remove the iptable-persistant [Y/n]: ")
         var.lower()
         if var == 'y' or var == 'yes' or var == '':
             os.system("apt purge iptables-persistent")
@@ -127,22 +128,22 @@ def enable_firewall_sequence():
             print("\nufw will flush its chains.This is good in maintaining a consistent state, but it may drop existing connections (eg ssh)")
             os.system("ufw allow proto tcp from any to any port 22")
             # Run the following command to verify that the ufw daemon is enabled:
-            print(" \n...verifying that the ufw daemon is enabled")
+            print(" \nverifying that the ufw daemon is enabled:")
             os.system("systemctl is-enabled ufw.service")
             # following command to verify that the ufw daemon is active:
-            print(" \n...verifying that the ufw daemon is active:")
+            print(" \nverifying that the ufw daemon is active:")
             os.system("systemctl is-active ufw")
             # Run the following command to verify ufw is active
-            print(" \n...verifying ufw is active")
+            print(" \nverifying ufw is active:")
             os.system("ufw status")
             # following command to unmask the ufw daemon
-            print("\n...unmasking ufw daemon")
+            print("\nunmasking ufw daemon:")
             os.system("systemctl unmask ufw.service")
             # following command to enable and start the ufw daemon:
-            print("\n...enabling and starting the ufw daemon:")
+            print("\nenabling and starting the ufw daemon:")
             os.system("systemctl --now enable ufw.service")
             #following command to enable ufw:
-            print("\n..Enabling the firewall")
+            print("\nEnabling the firewall...")
             os.system("ufw enable")
             line="""
             Commands issued before enabling the firewall:
@@ -177,7 +178,7 @@ the operation of the system. The loopback interface is the only place that loopb
 (127.0.0.0/8 for IPv4 and ::1/128 for IPv6) traffic should be seen. All other interfaces
 should ignore traffic on this network as an anti-spoofing measure.
 """)
-    var = input("\n do you want to proceed [Y/n] ?")
+    var = input("\ndo you want to proceed [Y/n] ?")
     var.lower()
     if var == 'y' or var == 'yes' or var == '':
         line="""
@@ -251,7 +252,7 @@ def is_valid_network_address(address_parts):
 def get_network_address():
     while True:
         try:
-            netadd = input("\nEnter network address (in the format xxx.xxx.xxx.xxx): ")
+            netadd = input("Enter network address (in the format xxx.xxx.xxx.xxx): ")
             address_parts = netadd.split('.')
 
             # Use a regular expression to check if the input matches the expected format
@@ -356,26 +357,26 @@ Do you want to configure the default deny policy? [Y/n]: """)
 
     var.lower()
     if var == 'y' or var == 'yes' or var == '':
-        print("...remediation process...")
+        print("remediation process...")
         print("\n allowing Git...")
         os.system("ufw allow git")
-        print("\n allowing http in...")
+        print("\nallowing http in...")
         os.system("ufw allow in http")
-        print("\n allowing http out...")
+        print("\nallowing http out...")
         os.system("ufw allow out http")
-        print("\n allowing https in...")
+        print("\nallowing https in...")
         os.system("ufw allow in https")
-        print("\n allowing https out...")
+        print("\nallowing https out...")
         os.system("ufw allow out https")
-        print("\n allowing port 53 out...")
+        print("\nallowing port 53 out...")
         os.system("ufw allow out 53")
-        print("\n allowing ufw logging on...")
+        print("\nallowing ufw logging on...")
         os.system("ufw logging on")
-        print("\n denying incoming by default...")
+        print("\ndenying incoming by default...")
         os.system("ufw default deny incoming")
-        print("\n denying outgoing by default...")
+        print("\ndenying outgoing by default...")
         os.system("ufw default deny outgoing")
-        print("\n denying default routing...")
+        print("\ndenying default routing...")
         os.system("ufw default deny routed")
         line="""
         User configured the following default deny policies:
@@ -394,7 +395,7 @@ Do you want to configure the default deny policy? [Y/n]: """)
     elif var == 'n' or var == 'no':
         line="User skipped configuring default deny policy"
         log_changes(line)
-        print("\n...exiting port deny policy")
+        print("\nexiting port deny policy...")
 
 
 
@@ -426,15 +427,30 @@ def all_ufw_hardening_controls():
 
 
 def main():
+#     #customization-------------------------
+#     text=''
+#     def slow_print(text,**kwargs):
+#         delay=0.05
+#     for char in text:
+#         print(char, end='', flush=True, **kwargs)
+#         time.sleep(delay)
+#
+# # Override the built-in print function
+#     def print(*args, **kwargs):
+#         slow_print(*args, **kwargs)
+#     built_in_print = print
+
+
+
     try:
         log_setup()
         all_ufw_hardening_controls()
-        print("\n \033[91mPress enter to exit the code [enter] \033[0m")
+        print("\n\033[91mPress enter to exit the code [enter] \033[0m")
         input()
         print("\nExiting...")
         time.sleep(2)
     except KeyboardInterrupt:
-        print("\n\nApplication stopped..")
+        print("\n\nApplication stopped...")
 
 
 
