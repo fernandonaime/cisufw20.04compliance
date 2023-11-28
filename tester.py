@@ -276,7 +276,7 @@ def get_proto():
 def get_mask():
     while True:
         try:
-            mask = int(input("\nEnter the whole number value of the subnet mask (16-32): "))
+            mask = int(input("Enter the whole number value of the subnet mask (16-32): "))
             if 16 <= mask <= 32:
                 return str(mask)
             else:
@@ -315,9 +315,8 @@ def get_port_number(script_path):
                 raise ValueError("\nInvalid Index Number. Please enter a value between 0 and",len(ports_list))
         except ValueError as ve:
             print("\nError:",ve)
-
-def ensure_rules_on_ports(script_path):
-    print("""
+def ensure_rules_on_ports_banner():
+        print("""
 \033[91m=== Configuring Firewall Rules for All Open Ports ===\033[0m
 
 To reduce the attack surface of a system, all services and ports should be blocked unless required.
@@ -326,19 +325,21 @@ Your configuration will follow this format:
     ufw allow from 192.168.1.0/24 to any proto tcp port 443
 
 """)
-    var=input("Do you want to continue configuring firewall rules for all ports [Y/n]: ").lower()
+
+def ensure_rules_on_ports(script_path):
+    var=input("Do you want to continue configuring firewall rules for a port [Y/n]: ").lower()
     if var == 'y' or var == 'yes' or var == '':
         port_number=get_port_number(script_path)
         allow = get_allow_deny()
         netad = get_network_address()
-        proto = get_proto()
         mask = get_mask()
+        proto = get_proto()
         rule = ("ufw " + allow + " from " + netad + "/" + mask + " to any proto " + proto + " port " + str(port_number))
         line=("User configured the follwing port rule\n: "+str(rule))
         log_changes(line)
         os.system(rule)
-        input("\nHit enter to continue [enter]")
-        input()
+        input("\nHit enter to continue [enter]: ")
+        ensure_rules_on_ports(script_path)
     elif var == 'n' or var == 'no':
         line=("User did not configure firewall rules on ports")
         log_changes(line)
@@ -416,6 +417,7 @@ def all_ufw_hardening_controls():
     time.sleep(2)
     enable_firewall_sequence()
     time.sleep(2)
+    ensure_rules_on_ports_banner()
     script_path = 'ufwropnprts.sh'
     ensure_rules_on_ports(script_path)
     time.sleep(2)
@@ -432,7 +434,7 @@ def main():
         print("\nExiting...")
         time.sleep(2)
     except KeyboardInterrupt:
-        print("\n\nExiting the application !")
+        print("\n\nApplication stopped..")
 
 
 
