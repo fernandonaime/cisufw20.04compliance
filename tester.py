@@ -46,12 +46,12 @@ def ensure_ufw_installed():
     if not is_ufw_installed():
         var = input("\nThis point onwards,the configurations require the installation of ufw Do you want to install the Host firewall [Y/n] ?")
         var.lower()
-        if var == 'y'or'yes'or'':
+        if var == 'y' or var == 'yes' or var == '':
             os.system("apt install ufw")
             line="Installed UFW"
             log_changes(line)
             print("\n",line)
-        else:
+        elif var == 'n' or var == 'no':
             line="UFW not installed"
             log_changes(line)
             print("\n",line)
@@ -75,12 +75,12 @@ def ensure_iptables_persistent_packages_removed():
     if is_iptables_persistent_installed():
         var = input("\n ...do you want to remove the iptable-persistant [Y/n]: ")
         var.lower()
-        if var == 'y'or'yes'or'':
+        if var == 'y' or var == 'yes' or var == '':
             os.system("apt purge iptables-persistent")
             line="Iptables persistant packages removed"
             log_changes(line)
             print("\n",line)
-        else:
+        elif var == 'n' or var == 'no':
             line="Iptables persistant packages skipped by user"
             log_changes(line)
             print("\n",line)
@@ -123,7 +123,7 @@ def enable_firewall_sequence():
     if not is_ufw_enabled():
         var = input("\nUFW is not enabled, do you want to enable it [Y/N] ")
         var.lower()
-        if var == 'y'or'yes'or'':
+        if var == 'y' or var == 'yes' or var == '':
             print("\nufw will flush its chains.This is good in maintaining a consistent state, but it may drop existing connections (eg ssh)")
             os.system("ufw allow proto tcp from any to any port 22")
             # Run the following command to verify that the ufw daemon is enabled:
@@ -155,7 +155,7 @@ def enable_firewall_sequence():
             """
             log_changes(line)
             print("\n",line)
-        else:
+        elif var == 'n' or var == 'no':
             line="User didn't enable the UFW service"
             log_changes(line)
             print("\nExiting UFW enabling mode... continuing to next configurations")
@@ -179,7 +179,7 @@ should ignore traffic on this network as an anti-spoofing measure.
 """)
     var = input("\n do you want to proceed [Y/n] ?")
     var.lower()
-    if var == 'y'or'yes'or'':
+    if var == 'y' or var == 'yes' or var == '':
         line="""
         User enabled configuring lo interfaces,
         Commands executed when configuring loopback interfaces:
@@ -195,7 +195,7 @@ should ignore traffic on this network as an anti-spoofing measure.
         os.system("ufw allow out on lo")
         os.system("ufw deny in from 127.0.0.0/8")
         os.system("ufw deny in from ::1")
-    else:
+    elif var == 'n' or var == 'no':
         line="Loopback interface not configured"
         log_changes(line)
         print("\n",line)
@@ -212,7 +212,7 @@ default policy, preventing network usage.
                 "packets will be dropped by the"
                 "default policy preventing network usage., [Y/n]")
     var.lower()
-    if var == 'y'or'yes'or'':
+    if var == 'y' or var == 'yes' or var == '':
         # var = input("\n PLease verify all the rules whether it matches all the site policies")
         print("\n implementing a policy to allow all outbound connections on all interfaces:")
         line="""
@@ -224,7 +224,7 @@ default policy, preventing network usage.
         print("\nConfiguration successfull ...")
         os.system("ufw allow out on all")
 
-    else:
+    elif var == 'n' or var == 'no':
         line="User skipped the ufw outbound configurations"
         log_changes(line)
         print("\n Hardening measure skipped")
@@ -327,7 +327,7 @@ Your configuration will follow this format:
 
 """)
     var=input("Do you want to continue configuring firewall rules for all ports [Y/n]: ").lower()
-    if var == 'y'or'yes'or'':
+    if var == 'y' or var == 'yes' or var == '':
         port_number=get_port_number(script_path)
         allow = get_allow_deny()
         netad = get_network_address()
@@ -339,7 +339,7 @@ Your configuration will follow this format:
         os.system(rule)
         input("\nHit enter to continue [enter]")
         input()
-    else:
+    elif var == 'n' or var == 'no':
         line=("User did not configure firewall rules on ports")
         log_changes(line)
         print("Skipping firewall rule configuration on ports...")
@@ -354,7 +354,7 @@ Any port and protocol not explicitly allowed will be blocked.
 Do you want to configure the default deny policy? [Y/n]: """)
 
     var.lower()
-    if var=='y'or'yes'or'':
+    if var == 'y' or var == 'yes' or var == '':
         print("...remediation process...")
         print("\n allowing Git...")
         os.system("ufw allow git")
@@ -390,7 +390,7 @@ Do you want to configure the default deny policy? [Y/n]: """)
             ufw default deny routed
         """
         log_changes(line)
-    else:
+    elif var == 'n' or var == 'no':
         line="User skipped configuring default deny policy"
         log_changes(line)
         print("\n exiting port deny policy")
