@@ -8,6 +8,16 @@ from datetime import datetime
 
 
 # --------------------------------------------------------------------------------------------------
+def y_n_choice():
+    while True:
+        try:
+            y_n = input("Enter yes to continue no to skip [y/n]: ").lower()
+            if y_n not in ['yes', 'y', '', 'no', 'n']:
+                raise ValueError("Invalid input, please enter [Y/N]: ")
+
+            return y_n
+        except ValueError as ve:
+            print("Error:",ve)
 def log_setup():
     log_file_path = "script_log.txt"
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -78,7 +88,8 @@ to conflicts.
 
 def ensure_iptables_persistent_packages_removed():
     if is_iptables_persistent_installed():
-        var = input("\ndo you want to remove the iptable-persistant [Y/n]: ")
+        print("\ndo you want to remove the iptable-persistant: ")
+        var=y_n_choice()
         var.lower()
         if var == 'y' or var == 'yes' or var == '':
             os.system("apt purge iptables-persistent")
@@ -126,7 +137,8 @@ By default, `ufw` will prompt when enabling the firewall while running under SSH
 
 def enable_firewall_sequence():
     if not is_ufw_enabled():
-        var = input("\nUFW is not enabled, do you want to enable it [Y/N] ")
+        print("\nUFW is not enabled, do you want to enable it, ")
+        var=y_n_choice()
         var.lower()
         if var == 'y' or var == 'yes' or var == '':
             print("\nufw will flush its chains.This is good in maintaining a consistent state, but it may drop existing connections (eg ssh)")
@@ -182,7 +194,8 @@ the operation of the system. The loopback interface is the only place that loopb
 (127.0.0.0/8 for IPv4 and ::1/128 for IPv6) traffic should be seen. All other interfaces
 should ignore traffic on this network as an anti-spoofing measure.
 """)
-    var = input("\ndo you want to proceed [Y/n] ?")
+    print("\ndo you want to proceed, ")
+    var=y_n_choice()
     var.lower()
     if var == 'y' or var == 'yes' or var == '':
         line="""
@@ -213,9 +226,10 @@ def ensure_ufw_outbound_connections():
 If rules are not in place for new outbound connections, all packets will be dropped by the
 default policy, preventing network usage.
 """)
-    var = input("\n Do you want to configure your ufw outbound connections if this set of rules are not in place for new outbound connections all"
+    print("\n Do you want to configure your ufw outbound connections if this set of rules are not in place for new outbound connections all"
                 "packets will be dropped by the"
-                "default policy preventing network usage., [Y/n]")
+                "default policy preventing network usage.,")
+    var=y_n_choice()
     var.lower()
     if var == 'y' or var == 'yes' or var == '':
         # var = input("\n PLease verify all the rules whether it matches all the site policies")
@@ -332,7 +346,8 @@ Your configuration will follow this format:
 """)
 
 def ensure_rules_on_ports(script_path):
-    var=input("Do you want to continue configuring firewall rules for a port [Y/n]: ").lower()
+    print("Do you want to continue configuring firewall rules for a port [Y/n]: ").lower()
+    var=y_n_choice()
     if var == 'y' or var == 'yes' or var == '':
         port_number=get_port_number(script_path)
         allow = get_allow_deny()
@@ -352,13 +367,13 @@ def ensure_rules_on_ports(script_path):
 
 
 def ensure_port_deny_policy():
-    var = input("""
+    print("""
 \033[91m================ Default Port Deny Policy ================\033[0m
 
 Any port and protocol not explicitly allowed will be blocked.
 
 Do you want to configure the default deny policy? [Y/n]: """)
-
+    var=y_n_choice()
     var.lower()
     if var == 'y' or var == 'yes' or var == '':
         print("remediation process...")
@@ -404,9 +419,16 @@ Do you want to configure the default deny policy? [Y/n]: """)
 
 
 
-#==========================================================Configuring NF Tables======================================
-
-
+#==========================================================Disabling Unused network services======================================
+#1. ensure ipv6 is either enabled or diabled based onthe client
+#return bool(os.system("dpkg -s iptables-persistent >/dev/null 2>&1") == 0)
+#2. ensuring wireless interfaces are disabled if not in use
+#3. Ensure bluetooth is disabled
+#4. Ensure DCCP is disabled
+#5. Ensure SCTP is diabled
+#6. Ensure RDS is disabled
+#7. Ensure TIPC is disabled
+#8.
 
 
 
