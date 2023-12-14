@@ -346,7 +346,7 @@ Your configuration will follow this format:
 """)
 
 def ensure_rules_on_ports(script_path):
-    print("Do you want to continue configuring firewall rules for a port [Y/n]: ").lower()
+    print("Do you want to continue configuring firewall rules for a port [Y/n]: ")
     var=y_n_choice()
     if var == 'y' or var == 'yes' or var == '':
         port_number=get_port_number(script_path)
