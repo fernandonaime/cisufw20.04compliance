@@ -1,10 +1,9 @@
 import os
-import subprocess
-import sys
 import re
+import subprocess
 import time
-from datetime import datetime
 import tkinter as tk
+from datetime import datetime
 from tkinter import messagebox, simpledialog
 
 
@@ -18,10 +17,17 @@ def y_n_choice():
             user_input = simpledialog.askstring("User Input", "Enter 'yes' to continue or 'no' to skip:", parent=root).lower()
             if user_input not in ['yes', 'y', '', 'no', 'n']:
                 raise ValueError("Invalid input, please enter 'yes' or 'no'.")
+            elif user_input is None:
+                print("Error: Result is None.")
+                return
 
             return user_input
         except ValueError as ve:
-            print("Error:", ve)
+            print("Error:",ve)
+        except TypeError as ve:
+            print("Error:",ve)
+        except AttributeError as ve:
+            print("Error:",ve)
 
 
 def log_setup():
@@ -41,7 +47,6 @@ def log_setup():
 
 def log_changes(changes):
     log_file_path = "script_log.txt"
-    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(log_file_path, "a") as log_file:
             log_file.write(f"\nChanges made: {changes}")
 
@@ -79,6 +84,9 @@ the iptables package.
             log_changes(line)
             print("\n", line)
             exit()
+        elif var is None:
+            print("Error: Result is None.")
+            return
     else:
         line = "UFW already installed"
         log_changes(line)
@@ -111,10 +119,14 @@ to conflicts.
             line = "Iptables persistent packages skipped by user"
             log_changes(line)
             print("\n", line)
+        elif var is None:
+            print("Error: Result is None.")
+            return
     else:
         line = "Iptables persistent packages already uninstalled"
         log_changes(line)
         print("\n", line)
+
 
 
 
@@ -133,6 +145,12 @@ def is_ufw_enabled():
         # If an error occurs while running the command
         messagebox.showerror("Error", f"Error: {e}")
         return False
+    except ValueError as ve:
+            print("Error:",ve)
+    except TypeError as ve:
+            print("Error:",ve)
+    except AttributeError as ve:
+            print("Error:",ve)
 
 def enable_firewall_sequence():
 
@@ -253,7 +271,7 @@ default policy, preventing network usage.
             ufw allow out on all
         """
         log_changes(line)
-        print("\nConfiguration successfull ...")
+        print("\nConfiguration successful ...")
         os.system("ufw allow out on all")
 
     elif var == 'n' or var == 'no':
@@ -263,15 +281,24 @@ default policy, preventing network usage.
 
 
 def get_allow_deny():
+    root = tk.Tk()
+    root.withdraw()
     while True:
         try:
-            allw_dny = simpledialog.askstring("Enter rule (allow or deny): ").lower()
+            allw_dny = simpledialog.askstring("Enter rule (allow or deny): ", prompt="").lower()
             if allw_dny not in ['allow', 'deny']:
                 raise ValueError("Invalid rule. Please enter either 'allow' or 'deny'.")
-
+            elif allw_dny is None:
+                print("Error: Result is None.")
+                return
             return allw_dny
         except ValueError as ve:
-            print("Error:",ve)
+            print("Error:", ve)
+        except TypeError as ve:
+            print("Error:", ve)
+        except AttributeError as ve:
+            print("Error:", ve)
+
 
 
 def is_valid_decimal(value):
@@ -281,36 +308,58 @@ def is_valid_network_address(address_parts):
     return all(is_valid_decimal(part) for part in address_parts)
 
 def get_network_address():
+    root = tk.Tk()
+    root.withdraw()
     while True:
         try:
-            netadd = simpledialog.askstring("Enter network address (in the format xxx.xxx.xxx.xxx): ")
+            netadd = simpledialog.askstring("Enter network address (in the format xxx.xxx.xxx.xxx): ", prompt="")
             address_parts = netadd.split('.')
 
             # Use a regular expression to check if the input matches the expected format
             if not re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', netadd) or not is_valid_network_address(address_parts):
                 raise ValueError("Invalid network address format or out-of-range values. Please use xxx.xxx.xxx.xxx format.")
-
+            elif netadd is None:
+                print("Error: Result is None.")
+                return
             return netadd
         except ValueError as ve:
-             print("\nError:", ve)
+            print("Error:",ve)
+        except TypeError as ve:
+            print("Error:",ve)
+        except AttributeError as ve:
+            print("Error:",ve)
 
 def get_proto():
+    root = tk.Tk()
+    root.withdraw()
     while True:
         try:
-            proto = simpledialog.askstring("Enter protocol (tcp or udp): ").lower()
+            proto = simpledialog.askstring("Enter protocol (tcp or udp): ", prompt="").lower()
             if proto not in ['tcp', 'udp']:
                 raise ValueError("Invalid protocol. Please enter either 'tcp' or 'udp'.")
-
+            elif proto is None:
+                print("Error: Result is None.")
+                return
             return proto
         except ValueError as ve:
             print("Error:",ve)
+        except TypeError as ve:
+            print("Error:",ve)
+        except AttributeError as ve:
+            print("Error:",ve)
+
 
 def get_mask():
+    root = tk.Tk()
+    root.withdraw()
     while True:
         try:
-            mask = int(simpledialog.askstring("Enter the whole number value of the subnet mask (16-32): "))
+            mask = int(simpledialog.askstring("Enter the whole number value of the subnet mask (16-32): ", prompt="").lower())
             if 16 <= mask <= 32:
                 return str(mask)
+            elif mask is None:
+                print("Error: Result is None.")
+                return
             else:
                 raise ValueError("\nInvalid subnet mask. Please enter a value between 16 and 32.")
         except ValueError as ve:
@@ -318,7 +367,6 @@ def get_mask():
 
 def get_ports_as_a_list(script_path):
     result = subprocess.run(['bash', script_path], capture_output=True, text=True)
-    ports_list = 0
     if result.returncode == 0:
         # If the script ran successfully, print the output
         # getting numbers from string
@@ -336,17 +384,31 @@ def get_ports_as_a_list(script_path):
 
 
 def get_port_number(script_path):
+    root = tk.Tk()
+    root.withdraw()
     while True:
         try:
-            ports_list=get_ports_as_a_list(script_path)
-            p_no = int(input("Enter the index number of the port to be configured: "))
-            if 0 <= p_no <= len(ports_list)-1:
+            ports_list = get_ports_as_a_list(script_path)
+            p_no = simpledialog.askinteger("Enter the index number of the port to be configured:", prompt="")
+
+            # Check if the user pressed Cancel
+
+            if 0 <= p_no <= len(ports_list) - 1:
                 port_number = ports_list[p_no]
                 return str(port_number)
+            elif p_no is None:
+                print("Error: Result is None.")
+                return
             else:
-                raise ValueError("\nInvalid Index Number. Please enter a value between 0 and",len(ports_list))
+                raise ValueError(f"\nInvalid Index Number. Please enter a value between 0 and {len(ports_list) - 1}")
         except ValueError as ve:
-            print("\nError:",ve)
+            print("Error:",ve)
+        except TypeError as ve:
+            print("Error:",ve)
+        except AttributeError as ve:
+            print("Error:",ve)
+
+
 # def ensure_rules_on_ports_banner():
 #
 
@@ -369,18 +431,18 @@ Your configuration will follow this format:
         mask = get_mask()
         proto = get_proto()
         rule = ("ufw " + allow + " from " + netad + "/" + mask + " to any proto " + proto + " port " + str(port_number))
-        line=("User configured the follwing port rule\n: "+str(rule))
+        line=("User configured the following port rule\n: "+str(rule))
         log_changes(line)
         os.system(rule)
         input("\nHit enter to continue [enter]: ")
         ensure_rules_on_ports(script_path)
     elif var == 'n' or var == 'no':
-        line=("User did not configure firewall rules on ports")
+        line= "User did not configure firewall rules on ports"
         log_changes(line)
         print("Skipping firewall rule configuration on ports...")
 
 def is_default_deny_policy():
-    #check if the deny policies are already configured
+    #check if to deny policies are already configured
 
     return bool(os.system("ufw status verbose | grep 'Default: deny (incoming), deny (outgoing), deny (routed)' >/dev/null 2>&1") == 0)
 
@@ -447,7 +509,7 @@ def scan_system_configuration():
         print("\033[91mUFW is not installed.\033[0m")
 
     # Check if iptables-persistent packages are removed
-    if  is_iptables_persistent_installed():
+    if is_iptables_persistent_installed():
         print("\033[91mIptables-persistent packages are not removed.\033[0m")
 
     # Check if UFW is enabled
@@ -462,7 +524,12 @@ def scan_system_configuration():
         print("Loopback interface is configured.")
     except subprocess.CalledProcessError:
         print("\033[91mLoopback interface is not configured.\033[0m")
-
+    except ValueError as ve:
+            print("Error:",ve)
+    except TypeError as ve:
+            print("Error:",ve)
+    except AttributeError as ve:
+            print("Error:",ve)
     # Add more checks for other configurations as needed
 
     print("\nScanning complete.")
@@ -488,7 +555,7 @@ def all_ufw_hardening_controls():
 
 
 
-#function to askc the user if he wants to do a scan or go straight into configurations and call the relevent function in the script and exit if needed
+#function to ask the user if he wants to do a scan or go straight into configurations and call the relevant function in the script and exit if needed
 def scan_or_config():
     print("\n\033[91m==================== UFW CIS Compliance Suite ====================\033[0m")
     print("\nDo you want to scan the system ")
@@ -524,21 +591,23 @@ def scan_or_config():
 
 
 def main():
-    root = tk.Tk()
-    root.title("UFW CIS Compliance Suite")
+    try:
+        root = tk.Tk()
+        root.title("UFW CIS Compliance Suite")
 
-    label = tk.Label(root, text="Do you want to scan or configure the system?")
-    label.pack(pady=10)
+        label = tk.Label(root, text="Do you want to scan or configure the system?")
 
-    scan_button = tk.Button(root, text="Scan", command=scan_system_configuration)
-    scan_button.pack(pady=5)
+        label.pack(pady=20)
 
-    configure_button = tk.Button(root, text="Configure", command=all_ufw_hardening_controls)
-    configure_button.pack(pady=5)
+        scan_button = tk.Button(root, text="Scan", command=scan_system_configuration)
+        scan_button.pack(pady=10)
 
-    root.mainloop()
+        configure_button = tk.Button(root, text="Configure", command=all_ufw_hardening_controls)
+        configure_button.pack(pady=10)
 
-
+        root.mainloop()
+    except KeyboardInterrupt:
+        print("\n\nApplication stopped...")
 
 
 
