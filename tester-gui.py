@@ -472,7 +472,7 @@ def scan_system_configuration():
 
 
 def all_ufw_hardening_controls():
-    messagebox.showinfo("Configure", "Configuring the system... (Replace with actual configuration logic)")
+    messagebox.showinfo("Configure", "Configuring the system...check on your terminal")
     ensure_ufw_installed()
     time.sleep(2)
     ensure_iptables_persistent_packages_removed()
