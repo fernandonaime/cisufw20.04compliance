@@ -40,9 +40,10 @@ def log_changes(changes):
             log_file.write(f"\nChanges made: {changes}")
 
 
-
-
 def is_ufw_installed():
+    return bool(os.system("command -v ufw >/dev/null 2>&1") == 0)
+
+def ensure_ufw_installed():
     print("""
 \033[91m=============== Installing Host Firewall ===============\033[0m
 
@@ -54,10 +55,6 @@ mobile code and poorly configured software on a host.
 Note: Only one firewall utility should be installed and configured. UFW is dependent on
 the iptables package.
 """)
-    return bool(os.system("command -v ufw >/dev/null 2>&1") == 0)
-
-
-def ensure_ufw_installed():
     if not is_ufw_installed():
         var = input("\nThis point onwards,the configurations require the installation of ufw Do you want to install the Host firewall [Y/n] ?")
         var.lower()
@@ -77,16 +74,16 @@ def ensure_ufw_installed():
         print("\n",line)
 
 def is_iptables_persistent_installed():
+    return bool(os.system("dpkg -s iptables-persistent >/dev/null 2>&1") == 0)
+
+
+def ensure_iptables_persistent_packages_removed():
     print("""
 \033[91m============== Removing IP-Persistent Tables ==============\033[0m
 
 Running both `ufw` and the services included in the `iptables-persistent` package may lead
 to conflicts.
 """)
-    return bool(os.system("dpkg -s iptables-persistent >/dev/null 2>&1") == 0)
-
-
-def ensure_iptables_persistent_packages_removed():
     if is_iptables_persistent_installed():
         print("\ndo you want to remove the iptable-persistant: ")
         var=y_n_choice()
@@ -107,7 +104,25 @@ def ensure_iptables_persistent_packages_removed():
 
 
 
+
 def is_ufw_enabled():
+    try:
+        # Run the command to check UFW status
+        result = subprocess.run(['ufw', 'status'], capture_output=True, text=True, check=True)
+
+        # Check if the output contains 'Status: active'
+        return 'Status: active' in result.stdout
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        print("Error: 'ufw' executable not found. Please ensure that UFW is installed.")
+    except subprocess.CalledProcessError as e:
+        # If an error occurs while running the command
+        print(f"Error: {e}")
+        return False
+
+
+def enable_firewall_sequence():
+
     print("""
 \033[91m================== Enabling UFW ==================\033[0m
 
@@ -122,20 +137,6 @@ adding or removing rules (but will when modifying a rule or changing the default
 
 By default, `ufw` will prompt when enabling the firewall while running under SSH.
 """)
-
-    try:
-        # Run the command to check UFW status
-        result = subprocess.run(['ufw', 'status'], capture_output=True, text=True, check=True)
-
-        # Check if the output contains 'Status: active'
-        return 'Status: active' in result.stdout
-    except subprocess.CalledProcessError as e:
-        # If an error occurs while running the command
-        print(f"Error: {e}")
-        return False
-
-
-def enable_firewall_sequence():
     if not is_ufw_enabled():
         print("\nUFW is not enabled, do you want to enable it, ")
         var=y_n_choice()
@@ -180,7 +181,6 @@ def enable_firewall_sequence():
         line="UFW is already enabled"
         log_changes(line)
         print("\n",line)
-
 
 
 
@@ -334,8 +334,11 @@ def get_port_number(script_path):
                 raise ValueError("\nInvalid Index Number. Please enter a value between 0 and",len(ports_list))
         except ValueError as ve:
             print("\nError:",ve)
-def ensure_rules_on_ports_banner():
-        print("""
+# def ensure_rules_on_ports_banner():
+#
+
+def ensure_rules_on_ports(script_path):
+    print("""
 \033[91m=== Configuring Firewall Rules for All Open Ports ===\033[0m
 
 To reduce the attack surface of a system, all services and ports should be blocked unless required.
@@ -344,8 +347,6 @@ Your configuration will follow this format:
     ufw allow from 192.168.1.0/24 to any proto tcp port 443
 
 """)
-
-def ensure_rules_on_ports(script_path):
     print("Do you want to continue configuring firewall rules for a port [Y/n]: ")
     var=y_n_choice()
     if var == 'y' or var == 'yes' or var == '':
@@ -365,14 +366,21 @@ def ensure_rules_on_ports(script_path):
         log_changes(line)
         print("Skipping firewall rule configuration on ports...")
 
+def is_default_deny_policy():
+    #check if the deny policies are already configured
+
+    return bool(os.system("ufw status verbose | grep 'Default: deny (incoming), deny (outgoing), deny (routed)' >/dev/null 2>&1") == 0)
+
 
 def ensure_port_deny_policy():
+
     print("""
 \033[91m================ Default Port Deny Policy ================\033[0m
 
 Any port and protocol not explicitly allowed will be blocked.
 
 Do you want to configure the default deny policy? [Y/n]: """)
+    is_default_deny_policy()
     var=y_n_choice()
     var.lower()
     if var == 'y' or var == 'yes' or var == '':
@@ -416,35 +424,50 @@ Do you want to configure the default deny policy? [Y/n]: """)
         log_changes(line)
         print("\nexiting port deny policy...")
 
+def scan_system_configuration():
+    print("\n\033[91m==================== Scanning System Configuration ====================\033[0m")
+
+    # Check if UFW is installed
+    if is_ufw_installed():
+        print("UFW is installed.")
+    else:
+        print("\033[91mUFW is not installed.\033[0m")
+
+    # Check if iptables-persistent packages are removed
+    if  is_iptables_persistent_installed():
+        print("\033[91mIptables-persistent packages are not removed.\033[0m")
+
+    # Check if UFW is enabled
+    if is_ufw_enabled():
+        print("UFW is enabled.")
+    else:
+        print("\033[91mUFW is not enabled.\033[0m")
+
+    # Check if loopback interface is configured
+    try:
+        subprocess.run(['ufw', 'status', 'verbose', '|', 'grep', 'in', 'on', 'lo'], check=True, capture_output=True, text=True)
+        print("Loopback interface is configured.")
+    except subprocess.CalledProcessError:
+        print("\033[91mLoopback interface is not configured.\033[0m")
+
+    # Add more checks for other configurations as needed
+
+    print("\nScanning complete.")
+
+# Example usage:
 
 
 
-#==========================================================Disabling Unused network services======================================
-#1. ensure ipv6 is either enabled or diabled based onthe client
-#return bool(os.system("dpkg -s iptables-persistent >/dev/null 2>&1") == 0)
-#2. ensuring wireless interfaces are disabled if not in use
-#3. Ensure bluetooth is disabled
-#4. Ensure DCCP is disabled
-#5. Ensure SCTP is diabled
-#6. Ensure RDS is disabled
-#7. Ensure TIPC is disabled
-#8.
-
-
-
-
-
-
-
-#========================================================== M A I N ======================================
 def all_ufw_hardening_controls():
+
+
     ensure_ufw_installed()
     time.sleep(2)
     ensure_iptables_persistent_packages_removed()
     time.sleep(2)
     enable_firewall_sequence()
     time.sleep(2)
-    ensure_rules_on_ports_banner()
+    # ensure_rules_on_ports_banner()
     script_path = 'ufwropnprts.sh'
     ensure_rules_on_ports(script_path)
     time.sleep(2)
@@ -452,6 +475,36 @@ def all_ufw_hardening_controls():
     time.sleep(2)
 
 
+
+#function to askc the user if he wants to do a scan or go straight into configurations and call the relevent function in the script and exit if needed
+def scan_or_config():
+    print("\n\033[91m==================== UFW CIS Compliance Suite ====================\033[0m")
+    print("\nDo you want to scan the system ")
+    var=y_n_choice()
+    var.lower()
+    if var == 'y' or var == 'yes' or var == '':
+        scan_system_configuration()
+        print("\nExiting...")
+        time.sleep(2)
+        #ask the user if he needs to do the configurations
+        print("\nDo you want to continue to configurations")
+        var=y_n_choice()
+        var.lower()
+        if var == 'y' or var == 'yes' or var == '':
+            all_ufw_hardening_controls()
+            print("\n\033[91mPress enter to exit the code [enter] \033[0m")
+            input()
+            print("\nExiting...")
+            time.sleep(2)
+        if var == 'n' or var == 'no':
+            print("\nExiting...")
+            time.sleep(2)
+    elif var == 'n' or var == 'no':
+        print("\nContinuing to configurations...")
+        time.sleep(2)
+        return
+
+#========================================================== M A I N ======================================
 def main():
 #     #customization-------------------------
 #     text=''
@@ -470,11 +523,10 @@ def main():
 
     try:
         log_setup()
-        all_ufw_hardening_controls()
-        print("\n\033[91mPress enter to exit the code [enter] \033[0m")
-        input()
-        print("\nExiting...")
-        time.sleep(2)
+        scan_or_config()
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        print("Error: 'ufw' executable not found. Please ensure that UFW is installed.")
     except KeyboardInterrupt:
         print("\n\nApplication stopped...")
 
