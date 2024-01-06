@@ -218,6 +218,38 @@ By default, `ufw` will prompt when enabling the firewall while running under SSH
         print("\n",line)
 
 
+def is_loopback_interface_configured():
+    try:
+        #define list for which it has the rules which are not configured
+        list=[]
+        # Setting up UFW rules for the loopback interface
+        ufw_rules = [
+            "ufw allow in on lo",
+            "ufw allow out on lo",
+            "ufw deny in from 127.0.0.0/8",
+            "ufw deny in from ::1"
+        ]
+        # Iterate through each UFW rule
+        for rule in ufw_rules:
+            result = subprocess.run(rule, shell=True, capture_output=True, text=True)
+            # Check if the rule was not configured successfully
+            if "Rule added" not in result.stdout:
+                #add the rule to the list
+                list.append(rule)
+
+        # Print success message after checking all rules
+
+        if list==0:
+            return True
+        else:
+            print("\033[91mThe following rules are not configured:")
+            for i in list:
+                #print the list in orange color
+                print("\033[33m",i,"\033[0m")
+
+    except Exception as e:
+        print("Error: {e}")
+        return False
 
 
 def ensure_loopback_configured():
@@ -229,29 +261,51 @@ the operation of the system. The loopback interface is the only place that loopb
 (127.0.0.0/8 for IPv4 and ::1/128 for IPv6) traffic should be seen. All other interfaces
 should ignore traffic on this network as an anti-spoofing measure.
 """)
-    print("\ndo you want to proceed, ")
-    var=y_n_choice()
-    var.lower()
-    if var == 'y' or var == 'yes' or var == '':
-        line="""
-        User enabled configuring lo interfaces,
-        Commands executed when configuring loopback interfaces:
-            ufw allow in on lo
-            ufw allow out on lo
-            ufw deny in from 127.0.0.0/8
-            ufw deny in from ::1
-            
-        """
-        log_changes(line)
-        print("\nEnabling configurations on lo interfaces...")
-        os.system("ufw allow in on lo")
-        os.system("ufw allow out on lo")
-        os.system("ufw deny in from 127.0.0.0/8")
-        os.system("ufw deny in from ::1")
-    elif var == 'n' or var == 'no':
-        line="Loopback interface not configured"
+    if not is_loopback_interface_configured():
+        print("\nAll loopback interfaces are not configured, do you want to configure them, ")
+        var=y_n_choice()
+        var.lower()
+        if var == 'y' or var == 'yes' or var == '':
+            line="""
+            User enabled configuring lo interfaces,
+            Commands executed when configuring loopback interfaces:
+                ufw allow in on lo
+                ufw allow out on lo
+                ufw deny in from 127.0.0.0/8
+                ufw deny in from ::1
+                
+            """
+            log_changes(line)
+            print("\nEnabling configurations on lo interfaces...")
+            os.system("ufw allow in on lo")
+            os.system("ufw allow out on lo")
+            os.system("ufw deny in from 127.0.0.0/8")
+            os.system("ufw deny in from ::1")
+        elif var == 'n' or var == 'no':
+            line="Loopback interface not configured"
+            log_changes(line)
+            print("\n",line)
+    else:
+        line="Loopback interface already configured"
         log_changes(line)
         print("\n",line)
+#check if ufw outbound connections are already configured
+def is_ufw_outbound_connections_configured():
+    try:
+
+        result = subprocess.run("ufw allow out on all", shell=True, capture_output=True, text=True)
+        if "Rule added" not in result.stdout:
+                print("\033[91mThe following outbound rule not configured: ufw allow out on all")
+                return False
+
+        else:
+            print("The following outbound rule is configured: ufw allow out on all")
+            return True
+
+    except Exception as e:
+        print("Error: {e}")
+        return False
+
 
 
 def ensure_ufw_outbound_connections():
@@ -264,25 +318,28 @@ default policy, preventing network usage.
     print("\n Do you want to configure your ufw outbound connections if this set of rules are not in place for new outbound connections all"
                 "packets will be dropped by the"
                 "default policy preventing network usage.,")
-    var=y_n_choice()
-    var.lower()
-    if var == 'y' or var == 'yes' or var == '':
-        # var = input("\n PLease verify all the rules whether it matches all the site policies")
-        print("\n implementing a policy to allow all outbound connections on all interfaces:")
-        line="""
-        User enabled configuring UFW outbound connections,
-        below Commands executed when configuring outbound interfaces:
-            ufw allow out on all
-        """
-        log_changes(line)
-        print("\nConfiguration successful ...")
-        os.system("ufw allow out on all")
+    if not is_ufw_outbound_connections_configured():
+        var=y_n_choice()
+        var.lower()
+        if var == 'y' or var == 'yes' or var == '':
+            # var = input("\n PLease verify all the rules whether it matches all the site policies")
+            print("\n implementing a policy to allow all outbound connections on all interfaces:")
+            line="""
+            below command was executed for outbound configurations:
+                ufw allow out on all
+            """
+            log_changes(line)
+            os.system("ufw allow out on all")
+            print("\nConfiguration successful ...")
 
-    elif var == 'n' or var == 'no':
-        line="User skipped the ufw outbound configurations"
+        elif var == 'n' or var == 'no':
+            line="User skipped the ufw outbound configurations"
+            log_changes(line)
+            print(line)
+    else:
+        line="UFW outbound connections already configured"
         log_changes(line)
-        print("\n Hardening measure skipped")
-
+        print("\n",line)
 
 def get_allow_deny():
     root = tk.Tk()
@@ -318,7 +375,6 @@ def get_network_address():
         try:
             netadd = simpledialog.askstring("Enter network address (in the format xxx.xxx.xxx.xxx): ", prompt="")
             address_parts = netadd.split('.')
-
             # Use a regular expression to check if the input matches the expected format
             if not re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', netadd) or not is_valid_network_address(address_parts):
                 raise ValueError("Invalid network address format or out-of-range values. Please use xxx.xxx.xxx.xxx format.")
@@ -504,30 +560,40 @@ Do you want to configure the default deny policy? [Y/n]: """)
         print("\nexiting port deny policy...")
 
 def scan_system_configuration():
-    messagebox.showinfo("Scan", "Scanning the system... shown on terminal")
-    print("\n\033[91m==================== Scanning System Configuration ====================\033[0m")
-    # Check if UFW is installed
-    if is_ufw_installed():
-        print("UFW is installed.")
-    else:
-        print("\033[91mUFW is not installed.\033[0m")
-
-    # Check if iptables-persistent packages are removed
-    if is_iptables_persistent_installed():
-        print("\033[91mIptables-persistent packages are not removed.\033[0m")
-
-    # Check if UFW is enabled
-    if is_ufw_enabled():
-        print("UFW is enabled.")
-    else:
-        print("\033[91mUFW is not enabled.\033[0m")
-
-    # Check if loopback interface is configured
     try:
-        subprocess.run(['ufw', 'status', 'verbose', '|', 'grep', 'in', 'on', 'lo'], check=True, capture_output=True, text=True)
-        print("Loopback interface is configured.")
-    except subprocess.CalledProcessError:
-        print("\033[91mLoopback interface is not configured.\033[0m")
+        messagebox.showinfo("Scan", "Scanning the system... shown on terminal")
+        print("\n\033[91m==================== Scanning System Configuration ====================\033[0m")
+        # Check if UFW is installed
+        if is_ufw_installed():
+            print("UFW is installed.")
+        else:
+            print("\033[91mUFW is not installed.\033[0m")
+
+        # Check if iptables-persistent packages are removed
+        if is_iptables_persistent_installed():
+            print("\033[91mIptables-persistent packages are not removed.\033[0m")
+        else:
+            print("Iptables-persistent packages are removed.")
+        # Check if UFW is enabled
+        if is_ufw_enabled():
+            print("UFW is enabled.")
+        else:
+            print("\033[91mUFW is not enabled.\033[0m")
+        # Check if loopback interface is configured already
+        if is_default_deny_policy():
+            print("Default deny policy is configured.")
+        else:
+            print("\033[91mDefault deny policy is not configured.\033[0m")
+        # Check if loopback interface is configured already
+        if is_loopback_interface_configured():
+            print("Loopback interface is configured.")
+        else:
+            print("\033[91mLoopback interface is not configured.\033[0m")
+        if is_default_deny_policy():
+            print("Default deny policy is configured.")
+        is_ufw_outbound_connections_configured()
+
+
     except ValueError as ve:
             print("Error:",ve)
     except TypeError as ve:
@@ -535,14 +601,17 @@ def scan_system_configuration():
     except AttributeError as ve:
             print("Error:",ve)
     # Add more checks for other configurations as needed
+    #check if default deny policy is configured
 
-    print("\nScanning complete.")
+
+
 
 # Example usage:
 
 
 
 def all_ufw_hardening_controls():
+    log_setup()
     messagebox.showinfo("Configure", "Configuring the system...check on your terminal")
     ensure_ufw_installed()
     time.sleep(2)
@@ -556,7 +625,16 @@ def all_ufw_hardening_controls():
     time.sleep(2)
     ensure_port_deny_policy()
     time.sleep(2)
+    ensure_loopback_configured()
+    time.sleep(2)
+    ensure_ufw_outbound_connections()
+    time.sleep(2)
+    print("\n\033[91m==================== Configurations Complete ====================\033[0m")
+    print("\n\033[91m==================== Exiting ====================\033[0m")
+    time.sleep(2)
+    exit()
 
+#show all the configurations
 
 
 #function to ask the user if he wants to do a scan or go straight into configurations and call the relevant function in the script and exit if needed
