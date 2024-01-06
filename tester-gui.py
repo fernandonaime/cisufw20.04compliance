@@ -14,20 +14,24 @@ def y_n_choice():
 
     while True:
         try:
-            user_input = simpledialog.askstring("User Input", "Enter 'yes' to continue or 'no' to skip:", parent=root).lower()
-            if user_input not in ['yes', 'y', '', 'no', 'n']:
-                raise ValueError("Invalid input, please enter 'yes' or 'no'.")
-            elif user_input is None:
+            user_input = simpledialog.askstring("User Input", "Enter 'yes' to continue or 'no' to skip:", parent=root)
+
+            if user_input is None:
                 print("Error: Result is None.")
                 return
 
+            user_input = user_input.lower()
+            if user_input not in ['yes', 'y', 'no', 'n', '']:
+                raise ValueError("Invalid input, please enter 'yes' or 'no'.")
+
             return user_input
         except ValueError as ve:
-            print("Error:",ve)
+            print("Error:", ve)
         except TypeError as ve:
-            print("Error:",ve)
+            print("Error:", ve)
         except AttributeError as ve:
-            print("Error:",ve)
+            print("Error:", ve)
+
 
 
 def log_setup():
