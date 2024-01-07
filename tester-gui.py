@@ -220,37 +220,41 @@ By default, `ufw` will prompt when enabling the firewall while running under SSH
 
 def is_loopback_interface_configured():
     try:
-        #define list for which it has the rules which are not configured
-        list=[]
-        # Setting up UFW rules for the loopback interface
-        ufw_rules = [
-            "ufw allow in on lo",
-            "ufw allow out on lo",
-            "ufw deny in from 127.0.0.0/8",
-            "ufw deny in from ::1"
+        # Create a list to store unconfigured rules
+        unconfigured_rules = []
+
+        # Concatenate rules and statuses into a 2D array
+        ufw_rules_and_status = [
+            ["ufw allow in on lo", "Anywhere on lo"],
+            ["ufw allow out on lo", "ALLOW OUT   Anywhere on lo"],
+            ["ufw deny in from 127.0.0.0/8", "DENY        127.0.0.0/8 "],
+            ["ufw deny in from ::1", "DENY        ::1"]
         ]
-        # Iterate through each UFW rule
-        for rule in ufw_rules:
-            result = subprocess.run(rule, shell=True, capture_output=True, text=True)
-            # Check if the rule was not configured successfully
-            if "Rule added" not in result.stdout:
-                #add the rule to the list
-                list.append(rule)
 
-        # Print success message after checking all rules
+        # Get UFW status
+        result = subprocess.run(['ufw', 'status'], capture_output=True, text=True, check=True)
 
-        if list==0:
+        # Check for unconfigured rules
+        for rule, status in ufw_rules_and_status:
+            if status not in result.stdout:
+                unconfigured_rules.append(rule)
+
+        # Print results
+        if not unconfigured_rules:
+            print("All loopback rules are configured.")
             return True
         else:
-            print("\033[91mThe following rules are not configured:")
-            for i in list:
-                #print the list in orange color
-                print("\033[33m",i,"\033[0m")
+            print("\033[91mThe following Loopback rules are not configured:")
+            for unconfigured_rule in unconfigured_rules:
+                print("\033[33m", unconfigured_rule, "\033[0m")
+            return False
 
-    except Exception as e:
-        print("Error: {e}")
-        return False
-
+    except ValueError as ve:
+        print("Error:", ve)
+    except TypeError as ve:
+        print("Error:", ve)
+    except AttributeError as ve:
+        print("Error:", ve)
 
 def ensure_loopback_configured():
     print("""
@@ -292,18 +296,20 @@ should ignore traffic on this network as an anti-spoofing measure.
 #check if ufw outbound connections are already configured
 def is_ufw_outbound_connections_configured():
     try:
+        result = subprocess.run("ufw status", shell=True, capture_output=True, text=True)
 
-        result = subprocess.run("ufw allow out on all", shell=True, capture_output=True, text=True)
-        if "Rule added" not in result.stdout:
-                print("\033[91mThe following outbound rule not configured: ufw allow out on all")
-                return False
-
-        else:
+        if "Anywhere on all" in result.stdout:
             print("The following outbound rule is configured: ufw allow out on all")
             return True
+        else:
+            print("\033[91mThe following outbound rule is not configured: ufw allow out on all")
+            return False
 
+    except subprocess.CalledProcessError as e:
+        print("Error:", e)
+        return False
     except Exception as e:
-        print("Error: {e}")
+        print("Error:", e)
         return False
 
 
@@ -500,6 +506,9 @@ Your configuration will follow this format:
         line= "User did not configure firewall rules on ports"
         log_changes(line)
         print("Skipping firewall rule configuration on ports...")
+    elif var is None:
+        print("Error: Result is None.")
+        return
 
 def is_default_deny_policy():
     #check if to deny policies are already configured
@@ -508,56 +517,65 @@ def is_default_deny_policy():
 
 
 def ensure_port_deny_policy():
-
-    print("""
-\033[91m================ Default Port Deny Policy ================\033[0m
-
-Any port and protocol not explicitly allowed will be blocked.
-
-Do you want to configure the default deny policy? [Y/n]: """)
-    is_default_deny_policy()
-    var=y_n_choice()
-    var.lower()
-    if var == 'y' or var == 'yes' or var == '':
-        print("remediation process...")
-        print("\n allowing Git...")
-        os.system("ufw allow git")
-        print("\nallowing http in...")
-        os.system("ufw allow in http")
-        print("\nallowing http out...")
-        os.system("ufw allow out http")
-        print("\nallowing https in...")
-        os.system("ufw allow in https")
-        print("\nallowing https out...")
-        os.system("ufw allow out https")
-        print("\nallowing port 53 out...")
-        os.system("ufw allow out 53")
-        print("\nallowing ufw logging on...")
-        os.system("ufw logging on")
-        print("\ndenying incoming by default...")
-        os.system("ufw default deny incoming")
-        print("\ndenying outgoing by default...")
-        os.system("ufw default deny outgoing")
-        print("\ndenying default routing...")
-        os.system("ufw default deny routed")
-        line="""
-        User configured the following default deny policies:
-            ufw allow git
-            ufw allow in http
-            ufw allow out http
-            ufw allow in https
-            ufw allow out https
-            ufw allow out 53
-            ufw logging on
-            ufw default deny incoming
-            ufw default deny outgoing
-            ufw default deny routed
-        """
-        log_changes(line)
-    elif var == 'n' or var == 'no':
-        line="User skipped configuring default deny policy"
-        log_changes(line)
-        print("\nexiting port deny policy...")
+    try:
+        print("""
+    \033[91m================ Default Port Deny Policy ================\033[0m
+    
+    Any port and protocol not explicitly allowed will be blocked.
+    
+    Do you want to configure the default deny policy? [Y/n]: """)
+        is_default_deny_policy()
+        var=y_n_choice()
+        var.lower()
+        if var == 'y' or var == 'yes' or var == '':
+            print("remediation process...")
+            print("\n allowing Git...")
+            os.system("ufw allow git")
+            print("\nallowing http in...")
+            os.system("ufw allow in http")
+            print("\nallowing http out...")
+            os.system("ufw allow out http")
+            print("\nallowing https in...")
+            os.system("ufw allow in https")
+            print("\nallowing https out...")
+            os.system("ufw allow out https")
+            print("\nallowing port 53 out...")
+            os.system("ufw allow out 53")
+            print("\nallowing ufw logging on...")
+            os.system("ufw logging on")
+            print("\ndenying incoming by default...")
+            os.system("ufw default deny incoming")
+            print("\ndenying outgoing by default...")
+            os.system("ufw default deny outgoing")
+            print("\ndenying default routing...")
+            os.system("ufw default deny routed")
+            line="""
+            User configured the following default deny policies:
+                ufw allow git
+                ufw allow in http
+                ufw allow out http
+                ufw allow in https
+                ufw allow out https
+                ufw allow out 53
+                ufw logging on
+                ufw default deny incoming
+                ufw default deny outgoing
+                ufw default deny routed
+            """
+            log_changes(line)
+        elif var == 'n' or var == 'no':
+            line="User skipped configuring default deny policy"
+            log_changes(line)
+            print("\nexiting port deny policy...")
+        elif var is None:
+            print("Error: Result is None.")
+            return
+    except ValueError as ve:
+            print("Error:",ve)
+    except TypeError as ve:
+            print("Error:",ve)
+    except AttributeError as ve:
+            print("Error:",ve)
 
 def scan_system_configuration():
     try:
@@ -585,10 +603,7 @@ def scan_system_configuration():
         else:
             print("\033[91mDefault deny policy is not configured.\033[0m")
         # Check if loopback interface is configured already
-        if is_loopback_interface_configured():
-            print("Loopback interface is configured.")
-        else:
-            print("\033[91mLoopback interface is not configured.\033[0m")
+        is_loopback_interface_configured()
         if is_default_deny_policy():
             print("Default deny policy is configured.")
         is_ufw_outbound_connections_configured()
@@ -630,9 +645,7 @@ def all_ufw_hardening_controls():
     ensure_ufw_outbound_connections()
     time.sleep(2)
     print("\n\033[91m==================== Configurations Complete ====================\033[0m")
-    print("\n\033[91m==================== Exiting ====================\033[0m")
     time.sleep(2)
-    exit()
 
 #show all the configurations
 
