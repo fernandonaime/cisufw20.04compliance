@@ -54,9 +54,17 @@ def log_changes(changes):
     with open(log_file_path, "a") as log_file:
             log_file.write(f"\nChanges made: {changes}")
 
+def banner_UFW():
+    messagebox.showerror("ALERT","CIS recommends you to install ufw, you can proceed with the installation in the configure section")
+    return
 
 def is_ufw_installed():
-    return bool(os.system("command -v ufw >/dev/null 2>&1") == 0)
+    try:
+        return bool(os.system("command -v ufw >/dev/null 2>&1") == 0)
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        banner_UFW()
+
 
 def ensure_ufw_installed():
     root = tk.Tk()
@@ -143,7 +151,7 @@ def is_ufw_enabled():
         return 'Status: active' in result.stdout
     except FileNotFoundError:
         # Handle the FileNotFoundError
-        messagebox.showerror("Error", "'ufw' executable not found. Please ensure that UFW is installed.")
+        banner_UFW()
         return False
     except subprocess.CalledProcessError as e:
         # If an error occurs while running the command
@@ -248,7 +256,9 @@ def is_loopback_interface_configured():
             for unconfigured_rule in unconfigured_rules:
                 print("\033[33m", unconfigured_rule, "\033[0m")
             return False
-
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        banner_UFW()
     except ValueError as ve:
         print("Error:", ve)
     except TypeError as ve:
@@ -257,42 +267,53 @@ def is_loopback_interface_configured():
         print("Error:", ve)
 
 def ensure_loopback_configured():
-    print("""
-    \033[91m================ Configuring the Loopback Interface =================\033[0m
-
-Loopback traffic is generated between processes on the machine and is typically critical to
-the operation of the system. The loopback interface is the only place that loopback network
-(127.0.0.0/8 for IPv4 and ::1/128 for IPv6) traffic should be seen. All other interfaces
-should ignore traffic on this network as an anti-spoofing measure.
-""")
-    if not is_loopback_interface_configured():
-        print("\nAll loopback interfaces are not configured, do you want to configure them, ")
-        var=y_n_choice()
-        var.lower()
-        if var == 'y' or var == 'yes' or var == '':
-            line="""
-            User enabled configuring lo interfaces,
-            Commands executed when configuring loopback interfaces:
-                ufw allow in on lo
-                ufw allow out on lo
-                ufw deny in from 127.0.0.0/8
-                ufw deny in from ::1
-                
-            """
-            log_changes(line)
-            print("\nEnabling configurations on lo interfaces...")
-            os.system("ufw allow in on lo")
-            os.system("ufw allow out on lo")
-            os.system("ufw deny in from 127.0.0.0/8")
-            os.system("ufw deny in from ::1")
-        elif var == 'n' or var == 'no':
-            line="Loopback interface not configured"
+    try:
+        print("""
+        \033[91m================ Configuring the Loopback Interface =================\033[0m
+    
+    Loopback traffic is generated between processes on the machine and is typically critical to
+    the operation of the system. The loopback interface is the only place that loopback network
+    (127.0.0.0/8 for IPv4 and ::1/128 for IPv6) traffic should be seen. All other interfaces
+    should ignore traffic on this network as an anti-spoofing measure.
+    """)
+        if not is_loopback_interface_configured():
+            print("\nAll loopback interfaces are not configured, do you want to configure them, ")
+            var=y_n_choice()
+            var.lower()
+            if var == 'y' or var == 'yes' or var == '':
+                line="""
+                User enabled configuring lo interfaces,
+                Commands executed when configuring loopback interfaces:
+                    ufw allow in on lo
+                    ufw allow out on lo
+                    ufw deny in from 127.0.0.0/8
+                    ufw deny in from ::1
+                    
+                """
+                log_changes(line)
+                print("\nEnabling configurations on lo interfaces...")
+                os.system("ufw allow in on lo")
+                os.system("ufw allow out on lo")
+                os.system("ufw deny in from 127.0.0.0/8")
+                os.system("ufw deny in from ::1")
+            elif var == 'n' or var == 'no':
+                line="Loopback interface not configured"
+                log_changes(line)
+                print("\n",line)
+        else:
+            line="Loopback interface already configured"
             log_changes(line)
             print("\n",line)
-    else:
-        line="Loopback interface already configured"
-        log_changes(line)
-        print("\n",line)
+    except ValueError as ve:
+        print("Error:", ve)
+    except TypeError as ve:
+        print("Error:", ve)
+    except AttributeError as ve:
+        print("Error:", ve)
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        banner_UFW()
+
 #check if ufw outbound connections are already configured
 def is_ufw_outbound_connections_configured():
     try:
@@ -304,7 +325,9 @@ def is_ufw_outbound_connections_configured():
         else:
             print("\033[91mThe following outbound rule is not configured: ufw allow out on all")
             return False
-
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        banner_UFW()
     except subprocess.CalledProcessError as e:
         print("Error:", e)
         return False
@@ -352,7 +375,7 @@ def get_allow_deny():
     root.withdraw()
     while True:
         try:
-            allw_dny = simpledialog.askstring("Enter rule (allow or deny): ", prompt="").lower()
+            allw_dny = simpledialog.askstring("Outbound Configurations","Enter rule (allow or deny): ").lower()
             if allw_dny not in ['allow', 'deny']:
                 raise ValueError("Invalid rule. Please enter either 'allow' or 'deny'.")
             elif allw_dny is None:
@@ -379,7 +402,7 @@ def get_network_address():
     root.withdraw()
     while True:
         try:
-            netadd = simpledialog.askstring("Enter network address (in the format xxx.xxx.xxx.xxx): ", prompt="")
+            netadd = simpledialog.askstring("Outbound Configurations","Enter network address (in the format xxx.xxx.xxx.xxx): ")
             address_parts = netadd.split('.')
             # Use a regular expression to check if the input matches the expected format
             if not re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', netadd) or not is_valid_network_address(address_parts):
@@ -400,7 +423,7 @@ def get_proto():
     root.withdraw()
     while True:
         try:
-            proto = simpledialog.askstring("Enter protocol (tcp or udp): ", prompt="").lower()
+            proto = simpledialog.askstring("Outbound Configurations","Enter protocol (tcp or udp): ").lower()
             if proto not in ['tcp', 'udp']:
                 raise ValueError("Invalid protocol. Please enter either 'tcp' or 'udp'.")
             elif proto is None:
@@ -420,7 +443,7 @@ def get_mask():
     root.withdraw()
     while True:
         try:
-            mask = int(simpledialog.askstring("Enter the whole number value of the subnet mask (16-32): ", prompt="").lower())
+            mask = int(simpledialog.askstring("Outbound Configurations","Enter the whole number value of the subnet mask (16-32): ").lower())
             if 16 <= mask <= 32:
                 return str(mask)
             elif mask is None:
@@ -455,7 +478,7 @@ def get_port_number(script_path):
     while True:
         try:
             ports_list = get_ports_as_a_list(script_path)
-            p_no = simpledialog.askinteger("Enter the index number of the port to be configured:", prompt="")
+            p_no = simpledialog.askinteger("Outbound Configurations","Enter the index number of the port to be configured:")
 
             # Check if the user pressed Cancel
 
@@ -608,7 +631,9 @@ def scan_system_configuration():
             print("Default deny policy is configured.")
         is_ufw_outbound_connections_configured()
 
-
+    except FileNotFoundError:
+        # Handle the FileNotFoundError
+        banner_UFW()
     except ValueError as ve:
             print("Error:",ve)
     except TypeError as ve:
