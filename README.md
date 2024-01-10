@@ -1,5 +1,18 @@
-# ubuntu20.04compliance
-consists of CIS 3.4.1 Benchmark controls for UFW (Uncomplicated Firewall)
-, compatible on any debian system from 20.04 or higher releases
-, mainly focussed on Ubuntu live servers.
-, gui version to be focussed mainly on Workstations
+# UFW CIS Compliance Suite
+
+## Overview
+
+The UFW CIS Compliance Suite is a set of scripts designed to enhance and manage the security configurations of a Linux system using Uncomplicated Firewall (UFW). The suite follows the Center for Internet Security (CIS) guidelines for secure system configurations.
+
+## Features
+
+- **Modularity:** The project is structured into functional modules for easy maintenance and extensibility.
+- **Logging:** Detailed logs are maintained to track changes made during the configuration process.
+- **Flexible Configuration:** Users can choose different logging options, including an overall log, control-wise logs, and date-wise logs.
+
+## Project Structure
+
+- `MAIN.py`: Main script to execute the UFW CIS Compliance Suite.
+- `Utilities/`: Module for handling logging,user input and system scanning and configuration operations.
+- `Controls`: This directory contains the various CIS Benchmark controls.
+- ...
