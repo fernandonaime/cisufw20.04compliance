@@ -19,7 +19,6 @@ def banner():
         |                                               __/|   |
         |                                              |___/   |
     \033[91m""")
-    print("\033[91m")
 def y_n_choice():
     while True:
         try:
