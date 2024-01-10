@@ -12,7 +12,5 @@ The UFW CIS Compliance Suite is a set of scripts designed to enhance and manage 
 
 ## Project Structure
 
-- `MAIN.py`: Main script to execute the UFW CIS Compliance Suite.
-- `Utilities/`: Module for handling logging,user input and system scanning and configuration operations.
-- `Controls`: This directory contains the various CIS Benchmark controls.
+- `tester.py`: Main script to execute the UFW CIS Compliance Suite.
 - ...
