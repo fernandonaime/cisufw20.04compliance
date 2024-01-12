@@ -1,8 +1,8 @@
-# UFW CIS Compliance Suite
+#CIS Compliance Suite
 
 ## Overview
 
-The UFW CIS Compliance Suite is a set of scripts designed to enhance and manage the security configurations of a Linux system using Uncomplicated Firewall (UFW). The suite follows the Center for Internet Security (CIS) guidelines for secure system configurations.
+The CIS Compliance Suite is a set of scripts designed to enhance and manage the security configurations of a Linux system using Uncomplicated Firewall (UFW). The suite follows the Center for Internet Security (CIS) guidelines for secure system configurations.
 
 ## Features
 
