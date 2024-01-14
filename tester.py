@@ -1782,7 +1782,6 @@ def configure_all_benchmarks():
     patches_configure()
     log_category("patches")
     time.sleep(1)
-    control_or_date_log()
     ###time.sleep(1)
 
 
@@ -1801,14 +1800,19 @@ def configure_option():
                 if get_confirmation(f"\nYou have chosen {configure_type}. Are you sure?"):
                     if choice == "1":
                         configure_all_benchmarks()
+                        control_or_date_log()
                     elif choice == "2":
                         services_purge_main()
+                        control_or_date_log()
                     elif choice == "3":
                         ufw_configure()
+                        control_or_date_log()
                     elif choice == "4":
                         pam_configure()
+                        control_or_date_log()
                     elif choice == "5":
                         patches_configure()
+                        control_or_date_log()
                     elif choice.lower() == "b":
                         print("\nYou have canceled your action.\n")
                         return False
