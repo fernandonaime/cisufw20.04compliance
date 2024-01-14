@@ -1603,7 +1603,7 @@ def ufw_configure():
 def pam_scan():
     try:
             print("""
-        \033[91m|============== Scanning PAM on your system ==============|\033[0m""")
+    \033[91m|============== Scanning PAM on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
@@ -1613,7 +1613,7 @@ def pam_scan():
 def pam_configure():
     try:
             print("""
-        \033[91m|============== Configuring PAM on your system ==============|\033[0m""")
+    \033[91m|============== Configuring PAM on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
@@ -1623,7 +1623,7 @@ def pam_configure():
 def patches_scan():
     try:
             print("""
-        \033[91m|============== Scanning Patches & Updates on your system ==============|\033[0m""")
+    \033[91m|============== Scanning Patches & Updates on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
@@ -1632,7 +1632,7 @@ def patches_scan():
 def patches_configure():
     try:
             print("""
-        \033[91m|============== Configuring Patches & Updates on your system ==============|\033[0m""")
+    \033[91m|============== Configuring Patches & Updates on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
