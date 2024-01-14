@@ -91,7 +91,7 @@ def log_setup():
         with open(log_file_path, "w") as log_file:
             log_file.write(header)
             log_file.write(f"{current_datetime} - ============ SCRIPT INITIATION ============\n")
-    else:`
+    else:
         with open(log_file_path, "a") as log_file:
             log_file.write(f"{current_datetime} - ============ SCRIPT Execution ============\n")
 
