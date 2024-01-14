@@ -11,7 +11,6 @@ from colorama import Style
 from colorama import init as colorama_init
 
 
-
 def banner():
     print("""\033[94m 
         |  ____  _              _______ _     _                |
@@ -72,18 +71,21 @@ def y_n_choice():
         except AttributeError as ve:
             print("Error:", ve)
 
+
 log_ufw = []
 log_services = []
 log_passwords = []
 log_patching = []
 current_date = ""
+
+
 def log_setup():
     global current_date
     log_file_path = "script_log.txt"
     current_date = datetime.now().strftime("%Y-%m-%d")
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    header = f"{'-'*70}\nCIS Compliance Suite Logging\n{'-'*70}\n"
+    header = f"{'-' * 70}\nCIS Compliance Suite Logging\n{'-' * 70}\n"
 
     if not os.path.exists(log_file_path):
         with open(log_file_path, "w") as log_file:
@@ -94,8 +96,7 @@ def log_setup():
             log_file.write(f"{current_datetime} - ============ SCRIPT Execution ============\n")
 
 
-def log_changes(changes,control):
-
+def log_changes(changes, control):
     global log_ufw, log_services, log_passwords, log_patching
     if control == "ufw":
         log_ufw.append(changes)
@@ -105,6 +106,7 @@ def log_changes(changes,control):
         log_passwords.append(changes)
     elif control == "patching":
         log_patching.append(changes)
+
 
 def log_category(control):
     log_file_path = "script_log.txt"
@@ -142,7 +144,7 @@ def control_or_date_log():
         print("""
         Do you want to generate a log report?
         """)
-        choice=y_n_choice().lower()
+        choice = y_n_choice().lower()
         if choice == 'y' or choice == 'yes' or choice == '':
             choice = int(input("""
         \033[91m|==================== Log Options ====================|\033[0m
@@ -202,7 +204,6 @@ def control_or_date_log():
         print("Error:", ve)
 
 
-
 def scan_log(prompt):
     output_filepath = f"scan_log.txt"
     with open(output_filepath, 'w') as output_file:
@@ -211,6 +212,8 @@ def scan_log(prompt):
 
 # ================================= Services =================================== Services =========================== Services =================================== Services ========== Services =================================== Services ====
 colorama_init()
+
+
 def ask(name):
     while True:
         choice = input(
@@ -350,33 +353,33 @@ def scan_xserver():
     if check_xserver():
         print(f"- X Windows System is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = "X Windows System is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- X Windows System is not installed. No action is needed.\n")
         line = "X Windows System is not install. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_avahi():
     if check_avahi():
         print(f"- Avahi Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = "Avahi Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Avahi Server is not installed. No action is needed.\n")
         line = "Avahi Server is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_dhcp():
     if check_dhcp():
         print(f"- DHCP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = "DHCP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- DHCP Server is not installed. No action is needed.\n")
         line = "DHCP Server is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_ldap():
@@ -385,11 +388,11 @@ def scan_ldap():
             f"- Lightweight Directory Access Protocol is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = (
             f"Lightweight Directory Access Protocol is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Lightweight Directory Access Protocol is not installed. No action is needed.\n")
         line = "Lightweight Directory Access Protocol is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_nfs():
@@ -397,176 +400,176 @@ def scan_nfs():
         print(f"- Network File System is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = (
             f"Network File System is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Network File System is not installed. No action is needed.\n")
         line = "Network File System is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_dns():
     if check_dns():
         print(f"- DNS Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = "DNS Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- DNS Server is not installed. No action is needed.\n")
         line = "DNS Server is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_vsftpd():
     if check_vsftpd():
         print(f"- FTP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = "FTP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- FTP Server is not installed. No action is needed.\n")
         line = "FTP Server is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_http():
     if check_http():
         print(f"- HTTP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("HTTP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- HTTP Server is not installed. No action is needed.\n")
         line = ("HTTP Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_imap_pop3():
     if check_imap_pop3():
         print(f"- IMAP and POP3 is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("IMAP and POP3 is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- IMAP and POP3 is not installed. No action is needed.\n")
         line = ("IMAP and POP3 is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_samba():
     if check_samba():
         print(f"- Samba Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("Samba Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Samba Server is not installed. No action is needed.\n")
         line = ("Samba Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_squid():
     if check_squid():
         print(f"- HTTP Proxy Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("HTTP Proxy Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- HTTP Proxy Server is not installed. No action is needed.\n")
         line = ("HTTP Proxy Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_snmp():
     if check_snmp():
         print(f"- SNMP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("SNMP Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- SNMP Server is not installed. No action is needed.\n")
         line = ("SNMP Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_nis():
     if check_nis():
         print(f"- NIS Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("NIS Server is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- NIS Server is not installed. No action is needed.\n")
         line = ("NIS Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_dnsmasq():
     if check_dnsmasq():
         print(f"- DNSMASQ is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("DNSMASQ is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- DNSMASQ is not installed. No action is needed.\n")
         line = ("DNSMASQ is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_rsync():
     if check_rsync():
         print(f"- Rsync is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("Rsync is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Rsync is not installed. No action is needed.\n")
         line = ("Rsync is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_rsh():
     if check_rsh():
         print(f"- Rsh Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("Rsh Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Rsh Client is not installed. No action is needed.\n")
         line = "Rsh Client is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_talk():
     if check_talk():
         print(f"- Talk Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = "Talk Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Talk Client is not installed. No action is needed.\n")
         line = "Talk Client is not installed. No action is needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_telnet():
     if check_telnet():
         print(f"- Telnet Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("Telnet Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- Telnet Client is not installed. No action is needed.\n")
         line = ("Telnet Client is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_ldap_utils():
     if check_ldap_utils():
         print(f"- LDAP Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("LDAP Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- LDAP Client is not installed. No action is needed.\n")
         line = ("LDAP Client is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def scan_rpcbind():
     if check_rpcbind():
         print(f"- RPC Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
         line = ("RPC Client is installed.{Fore.RED} Please Uninstall it.{Style.RESET_ALL}\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
     else:
         print("- RPC Client is not installed. No action is needed.\n")
         line = ("RPC Client is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 # ======================================= Service Purge Functions =================================
@@ -575,17 +578,17 @@ def purge_xserver():
         if ask("X Windows System"):
             print(f"- X Windows System is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("X Windows System is installed.{Fore.RED} Proceeding to uninstall.{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
 
             os.system("apt purge xserver-xorg*")
         else:
             print("X Windows was not removed due to user input.\n")
             line = ("X Windows was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- X Windows System is not installed. No action needed.\n")
         line = ("X Windows System is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_avahi():
@@ -593,18 +596,18 @@ def purge_avahi():
         if ask("Avahi Server"):
             print(f"- Avahi Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Avahi Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("systemctl stop avahi-daemon.service")
             os.system("systemctl stop avahi-daemon.socket")
             os.system("apt purge avahi-daemon")
         else:
             print("Avahi Server was not removed due to user input.\n")
             line = ("Avahi Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Avahi Server is not installed. No action needed.\n")
         line = ("Avahi Server is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_dhcp():
@@ -612,16 +615,16 @@ def purge_dhcp():
         if ask("DHCP Server"):
             print(f"- DHCP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("DHCP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge isc-dhcp-server")
         else:
             print("DHCP Server was not removed due to user input.\n")
             line = ("DHCP Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- DHCP Server is not installed. No action needed.\n")
         line = ("DHCP is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_ldap():
@@ -631,16 +634,16 @@ def purge_ldap():
                 f"- Lightweight Directory Access Protocol is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = (
                 "Lightweight Directory Access Protocol is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge slapd")
         else:
             print("Lightweight Directory Access Protocol was not removed due to user input.\n")
             line = ("Lightweight Directory Access Protocol was not removed due to user input\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Lightweight Directory Access Protocol is not installed. No action is needed.\n")
         line = ("Lightweight Directory Access Protocol is not installed. No action needed\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_nfs():
@@ -648,16 +651,16 @@ def purge_nfs():
         if ask("Network File System"):
             print(f"- Network File System is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Network File System is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge nfs-kernel-server")
         else:
             print("Network File System is installed. Proceeding to uninstall...\n")
             line = ("Network File System was not removed due to user input\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Network File System is not installed. No action needed\n")
         line = ("Network File System is not installed. No action needed\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_dns():
@@ -665,16 +668,16 @@ def purge_dns():
         if ask("DNS Server"):
             print(f"- DNS Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("DNS Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge bind9")
         else:
             print("DNS Server was not removed due to user input.\n")
             line = ("DNS Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- DNS Server is not installed. No action is needed.\n")
         line = ("DNS Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_vsftpd():
@@ -682,16 +685,16 @@ def purge_vsftpd():
         if ask("FTP Server"):
             print(f"- FTP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("FTP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge vsftpd")
         else:
             print("FTP Server was not removed due to user input.\n")
             line = ("FTP Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- FTP Server is not installed. No action is needed.\n")
         line = ("FTP Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_http():
@@ -699,16 +702,16 @@ def purge_http():
         if ask("HTTP Server"):
             print(f"- HTTP Server is installed,{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("HTTP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge apache2")
         else:
             print("HTTP Server was not removed due to user input.\n")
             line = ("HTTP Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- HTTP Server is not installed. No action is needed.\n")
         line = ("HTTP Server is not installed. No action is needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_imap_pop3():
@@ -716,16 +719,16 @@ def purge_imap_pop3():
         if ask("IMAP and POP3"):
             print(f"- IMAP and POP3 is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("IMAP and POP3 is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge dovecot-impad dovecot-pop3d")
         else:
             print("IMAP and POP3 was not removed due to user input.\n")
             line = ("IMAP and POP3 was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- IMAP and POP3 is not installed. No action needed.\n")
         line = ("IMAP and POP3 is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_samba():
@@ -733,16 +736,16 @@ def purge_samba():
         if ask("Samba Server"):
             print(f"- Samba Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Samba Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge samba")
         else:
             print("Samba Server not removed due to user input.\n")
             line = ("Samba was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- X Samba Server is not installed. No action needed.\n")
         line = ("Samba Server is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_squid():
@@ -750,16 +753,16 @@ def purge_squid():
         if ask("HTTP Proxy Server"):
             print(f"- HTTP Proxy Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("HTTP Proxy Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge squid")
         else:
             print("HTTP Proxy Server not removed due to user input.\n")
             line = ("HTTP Proxy Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- HTTP Proxy Server is not installed. No action needed.\n")
         line = ("HTTP Proxy Server is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_snmp():
@@ -767,16 +770,16 @@ def purge_snmp():
         if ask("SNMP Server"):
             print(f"- SNMP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("SNMP Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge snmpd")
         else:
             print("SNMP Server not removed due to user input.\n")
             line = ("SNMP Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- SNMP Server is not installed. No action needed.\n")
         line = ("SNMP Server is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_nis():
@@ -784,16 +787,16 @@ def purge_nis():
         if ask("NIS Server"):
             print(f"- NIS Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("NIS Server is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge nis")
         else:
             print("NIS Server not removed due to user input.\n")
             line = ("NIS Server was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- NIS Server is not installed. No action needed.\n")
         line = ("NIS Server is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_dnsmasq():
@@ -801,16 +804,16 @@ def purge_dnsmasq():
         if ask("DNSMASQ"):
             print(f"- DNSMASQ is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("DNSMASQ is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge dnsmasq-base")
         else:
             print("DNSMASQ not removed due to user input.\n")
             line = ("DNSMASQ was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- DNSMASQ is not installed. No action needed.\n")
         line = ("DNSMASQ is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_rsync():
@@ -818,16 +821,16 @@ def purge_rsync():
         if ask("Rsync"):
             print(f"- Rsync is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Rsync is installed{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge rsync")
         else:
             print("Rsync not removed due to user input.\n")
             line = ("Rsync was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Rsync is not installed. No action needed.\n")
         line = ("Rsync is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 # ======================================= Service Clients Check Section ================================
@@ -877,16 +880,16 @@ def purge_rsh():
         if ask("Rsh Client"):
             print(f"- Rsh Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Rsh Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge rsh-client")
         else:
             print("Rsh Client not removed due to user input.\n")
             line = ("Rsh Client was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Rsh Client is not installed. No action needed.\n")
         line = ("Rsh Client is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_talk():
@@ -894,16 +897,16 @@ def purge_talk():
         if ask("Talk Client"):
             print(f"- Talk Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Talk Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge talk")
         else:
             print("Talk Client not removed due to user input.\n")
             line = ("Talk Client was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Talk Client is not installed. No action needed.\n")
         line = ("Talk Client is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_telnet():
@@ -911,16 +914,16 @@ def purge_telnet():
         if ask("Telnet Client"):
             print(f"- Telnet Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("Telnet Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge telnet")
         else:
             print("Telnet Client not removed due to user input.\n")
             line = ("Telnet Client was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- Telnet Client is not installed. No action needed.\n")
         line = ("Telnet Client is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_ldap_utils():
@@ -928,17 +931,17 @@ def purge_ldap_utils():
         if ask("LDAP Client"):
             print(f"- LDAP Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("LDAP Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge ldap-utils")
         else:
             print("LDAP Client not removed due to user input.\n")
             line = ("LDAP Client was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
 
     else:
         print("- LDAP Client is not installed. No action needed.\n")
         line = "LDAP Client is not installed. No action needed.\n"
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 def purge_rpcbind():
@@ -946,16 +949,16 @@ def purge_rpcbind():
         if ask("RPC Client"):
             print(f"- RPC Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = ("RPC Client is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
             os.system("apt purge rpcbind")
         else:
             print("RPC Client not removed due to user input.\n")
             line = ("RPC Client was not removed due to user input.\n")
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print("- RPC Client is not installed. No action needed.\n")
         line = ("RPC Client is not installed. No action needed.\n")
-        log_changes(line,"services")
+        log_changes(line, "services")
 
 
 # ======================================= Running Services Check Section ================================
@@ -971,7 +974,7 @@ def check_non_services():
         for index, line in enumerate(lines[1:], start=1):
             print(f"Index {index}: {line}")
             line = "Index {index}: {line}\n"
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print(f"Error running command: {result.stderr}")
     print("\n")
@@ -989,10 +992,11 @@ def check_non_services_scan():
         for index, line in enumerate(lines[1:], start=1):
             print(f"Index {index}: {line}")
             line = "Index {index}: {line}\n"
-            log_changes(line,"services")
+            log_changes(line, "services")
     else:
         print(f"Error running command: {result.stderr}")
     print("\n")
+
 
 # ==================================== U F W  =========================== U F W  ============================ U F W  ================================ U F W  =========================== U F W  ============================ U F W  ======================================= U F W  =========================== U F W  ============================ U F W  ================================ U F W  =========================== U F W  ============================ U F W  ================================
 def noufwbanner():
@@ -1028,11 +1032,11 @@ def ensure_ufw_installed():
         if var == 'y' or var == 'yes' or var == '':
             os.system("apt install ufw")
             line = "\nUFW INSTALLATION: ok"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\n", line)
         elif var == 'n' or var == 'no':
             line = "\nUFW INSTALLATION: no"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\n", line)
             exit()
         elif var is None:
@@ -1040,7 +1044,7 @@ def ensure_ufw_installed():
             return
     else:
         line = "\nUFW INSTALLATION:Pre-set"
-        log_changes(line,"ufw")
+        log_changes(line, "ufw")
         print("\n", line)
 
 
@@ -1062,18 +1066,18 @@ def ensure_iptables_persistent_packages_removed():
         if var == 'y' or var == 'yes' or var == '':
             os.system("apt purge iptables-persistent")
             line = "\nIP-PERSISTENT:removed"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print(line)
         elif var == 'n' or var == 'no':
             line = "\nIP-PERSISTENT: not removed"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\n", line)
         elif var is None:
             print("Error: Result is None.")
             return
     else:
         line = "\nIP-PERSISTENT:Pre-set"
-        log_changes(line,"ufw")
+        log_changes(line, "ufw")
         print("\n", line)
 
 
@@ -1146,18 +1150,18 @@ def enable_firewall_sequence():
         systemctl unmask ufw.service
         systemctl --now enable ufw.service
         ufw enable """
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\n", line)
         elif var == 'n' or var == 'no':
             line = "\nUFW-ENABLING: no"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\nExiting UFW enabling mode... continuing to next configurations")
         elif var is None:
             print("Error: Result is None.")
             return
     else:
         line = "\nUFW-ENABLING: Pre-set"
-        log_changes(line,"ufw")
+        log_changes(line, "ufw")
         print("\n", line)
 
 
@@ -1224,7 +1228,7 @@ def ensure_loopback_configured():
         ufw deny in from ::1
                     
                 """
-                log_changes(line,"ufw")
+                log_changes(line, "ufw")
                 print("\nEnabling configurations on lo interfaces...")
                 os.system("ufw allow in on lo")
                 os.system("ufw allow out on lo")
@@ -1232,14 +1236,14 @@ def ensure_loopback_configured():
                 os.system("ufw deny in from ::1")
             elif var == 'n' or var == 'no':
                 line = "\nLOOPBACK-INTERFACE: no"
-                log_changes(line,"ufw")
+                log_changes(line, "ufw")
                 print("\n", line)
             elif var is None:
                 print("Error: Result is None.")
                 return
         else:
             line = "\nLOOPBACK-INTERFACE: Pre-set"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\n", line)
     except ValueError as ve:
         print("Error:", ve)
@@ -1289,20 +1293,20 @@ def ensure_ufw_outbound_connections():
     OUTBOUND-RULES: ok, below command was executed:
         ufw allow out on all
             """
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             os.system("ufw allow out on all")
             print("\nConfiguration successful ...")
 
         elif var == 'n' or var == 'no':
             line = "\nOUTBOUND-RULES: no"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print(line)
         elif var is None:
             print("Error: Result is None.")
             return
     else:
         line = "\nOUTBOUND-RULES:Pre-set"
-        log_changes(line,"ufw")
+        log_changes(line, "ufw")
         print("\n", line)
 
 
@@ -1447,13 +1451,13 @@ def ensure_rules_on_ports(script_path):
         proto = get_proto()
         rule = ("ufw " + allow + " from " + netad + "/" + mask + " to any proto " + proto + " port " + str(port_number))
         line = ("\nPORT-RULES: \n: " + str(rule))
-        log_changes(line,"ufw")
+        log_changes(line, "ufw")
         os.system(rule)
         input("\nHit enter to continue [enter]: ")
         ensure_rules_on_ports(script_path)
     elif var == 'n' or var == 'no':
         line = "\nPORT-RULES: no"
-        log_changes(line,"ufw")
+        log_changes(line, "ufw")
         print("Skipping firewall rule configuration on ports...")
     elif var is None:
         print("Error: Result is None.")
@@ -1512,10 +1516,10 @@ def ensure_port_deny_policy():
         ufw default deny outgoing
         ufw default deny routed
             """
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
         elif var == 'n' or var == 'no':
             line = "\nDEFAULT-DENY-POLICY: no"
-            log_changes(line,"ufw")
+            log_changes(line, "ufw")
             print("\nexiting port deny policy...")
         elif var is None:
             print("Error: Result is None.")
@@ -1599,10 +1603,11 @@ def ufw_configure():
     except KeyboardInterrupt:
         print("\n\nExited unexpectedly...")
 
-#======================= PAM ======================= PAM ============================ PAM ======================= PAM ============================== PAM ======================= PAM ============================ PAM ======================= PAM =======================
+
+# ======================= PAM ======================= PAM ============================ PAM ======================= PAM ============================== PAM ======================= PAM ============================ PAM ======================= PAM =======================
 def pam_scan():
     try:
-            print("""
+        print("""
     \033[91m|============== Scanning PAM on your system ==============|\033[0m""")
 
     except ValueError as ve:
@@ -1610,34 +1615,41 @@ def pam_scan():
     except TypeError as ve:
         print("Error:", ve)
 
+
 def pam_configure():
     try:
-            print("""
+        print("""
     \033[91m|============== Configuring PAM on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
     except TypeError as ve:
         print("Error:", ve)
-#======================= Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates =========================
+
+
+# ======================= Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates =========================
 def patches_scan():
     try:
-            print("""
+        print("""
     \033[91m|============== Scanning Patches & Updates on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
     except TypeError as ve:
         print("Error:", ve)
+
+
 def patches_configure():
     try:
-            print("""
+        print("""
     \033[91m|============== Configuring Patches & Updates on your system ==============|\033[0m""")
 
     except ValueError as ve:
         print("Error:", ve)
     except TypeError as ve:
         print("Error:", ve)
+
+
 # ============================================ Main Functions ======================================
 
 def services_scan():
@@ -1751,12 +1763,15 @@ def services_scan_main():
     services_scan()
     scan_running_services_action()
 
+
 def scan_all_benchmarks():
     services_scan_main()
     ufw_scan()
     pam_scan()
     patches_scan()
     ###time.sleep(1)
+
+
 def configure_all_benchmarks():
     services_purge_main()
     log_category("services")
@@ -1770,11 +1785,12 @@ def configure_all_benchmarks():
     control_or_date_log()
     ###time.sleep(1)
 
+
 def configure_option():
     while True:
         try:
             choice = options_for_scanning_or_configuration("configuration")
-            if choice in ("1", "2", "3","4","5"):
+            if choice in ("1", "2", "3", "4", "5"):
                 configure_type = {
                     "1": "All Benchmarks",
                     "2": "Special Services",
@@ -1812,6 +1828,7 @@ def configure_option():
         except Exception as e:
             print("Error:", e)
 
+
 def capture_function_output():
     output_variable = io.StringIO()
 
@@ -1823,12 +1840,11 @@ def capture_function_output():
     return result, printed_output
 
 
-
 def scan_option():
     while True:
         try:
             choice = options_for_scanning_or_configuration("scan")
-            if choice in ("1", "2", "3","4","5"):
+            if choice in ("1", "2", "3", "4", "5"):
                 scan_type = {
                     "1": "All Benchmarks",
                     "2": "Special Services",
@@ -1890,7 +1906,6 @@ def home_banner():
         return choice
 
 
-
 def options_for_scanning_or_configuration(option):
     while True:
         try:
@@ -1916,6 +1931,7 @@ def options_for_scanning_or_configuration(option):
         except AttributeError as ve:
             print(f"Error: {ve}")
 
+
 def get_confirmation(prompt):
     while True:
         conf_choice = input(f"{prompt} (y/n): ").lower()
@@ -1926,6 +1942,7 @@ def get_confirmation(prompt):
             return False
         else:
             print("\nPLEASE ENTER A VALID INPUT\n")
+
 
 def home_main():
     while True:
@@ -1949,16 +1966,6 @@ def home_main():
             print("Error:", e)
 
 
-
-
-
-
-
-
-
-
-
-
 def main():
     try:
         banner()
@@ -1971,8 +1978,6 @@ def main():
         print("Error:", e)
 
 
-
 main()
-
 
 # ============================================ End of Script ======================================
