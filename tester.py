@@ -973,7 +973,7 @@ def check_non_services():
 
         for index, line in enumerate(lines[1:], start=1):
             print(f"Index {index}: {line}")
-            line = "Index {index}: {line}\n"
+            line = "Index"+str(index)+": "+line+"\n"
             log_changes(line, "services")
     else:
         print(f"Error running command: {result.stderr}")
