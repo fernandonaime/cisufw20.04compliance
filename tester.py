@@ -81,7 +81,7 @@ current_date = ""
 
 def log_setup():
     global current_date
-    log_file_path = "script_log.txt"
+    log_file_path = "/logs/script_log.txt"
     current_date = datetime.now().strftime("%Y-%m-%d")
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -109,7 +109,7 @@ def log_changes(changes, control):
 
 
 def log_category(control):
-    log_file_path = "script_log.txt"
+    log_file_path = "/logs/script_log.txt"
     with open(log_file_path, "a") as log_file:
         if control == "ufw":
             log_file.write(f"-----------------------------------------------------------------------\n")
@@ -155,7 +155,7 @@ def control_or_date_log():
         Please enter the index of your choice: """))
 
             if choice == 1:
-                output_filepath = f"{current_date}.txt"
+                output_filepath = f"/logs/{current_date}.txt"
                 with open(output_filepath, 'w') as output_file:
                     for lines in enumerate(log_ufw):
                         output_file.writelines(f"{str(lines)}\n")
@@ -205,7 +205,7 @@ def control_or_date_log():
 
 
 def scan_log(prompt):
-    output_filepath = f"scan_log.txt"
+    output_filepath = f"/logs/scan_log.txt"
     with open(output_filepath, 'w') as output_file:
         output_file.writelines(f"{prompt}\n")
 
