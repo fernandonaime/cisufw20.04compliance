@@ -140,7 +140,6 @@ def log_category(control):
 def control_or_date_log():
     try:
         print("""
-        \033[91m|==================== Logger ====================|\033[0m
         Do you want to generate a log report?
         """)
         choice=y_n_choice().lower()
@@ -1841,19 +1840,18 @@ def scan_option():
                     if choice == "1":
                         captured_result, captured_output = capture_function_output()
                         scan_log(captured_output)
-                        control_or_date_log()
                     elif choice == "2":
                         scan_log((str(services_scan_main())))
-                        control_or_date_log()
+
                     elif choice == "3":
                         scan_log(ufw_scan())
-                        control_or_date_log()
+
                     elif choice == "4":
                         scan_log(pam_scan())
-                        control_or_date_log()
+
                     elif choice == "5":
                         scan_log(patches_scan())
-                        control_or_date_log()
+
                     elif choice.lower() == "b":
                         print("\nYou have canceled your action.\n")
                         return False
