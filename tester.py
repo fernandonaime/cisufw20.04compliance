@@ -2,21 +2,18 @@
 import os
 import re
 import subprocess
+import time
+import io
+from contextlib import redirect_stdout
 from datetime import datetime
-
 from colorama import Fore
 from colorama import Style
 from colorama import init as colorama_init
 
 
-# scan_endpath = os.getcwd() + "/scanReport.txt"
-# comp_endpath = os.getcwd() + "/compReport.txt"
-# report_file = open(comp_endpath, "w")
-# scan_report_file = open(scan_endpath, "w")
-
 
 def banner():
-    print("""\033[94m
+    print("""\033[94m 
         |  ____  _              _______ _     _                |
         | |  _ \| |            |__   __| |   (_)               |
         | | |_) | |_   _  ___     | |  | |__  _ _ __   __ _    |
@@ -25,6 +22,32 @@ def banner():
         | |____/|_|\__,_|\___|    |_|  |_| |_|_|_| |_|\__, |   |
         |                                               __/|   |
         |                                              |___/   |
+        
+            Welcome to the CIS Compliance Suite Script
+    
+    Description:
+    This script is designed to help you ensure compliance with the 
+    Center for Internet Security (CIS) benchmarks for
+    Ubuntu Linux 20.04 v2.0.1 - 06-29-2023
+    It provides options for system scanning and direct configurations, 
+    allowing you to assess and enhance the security posture of your system.
+    
+    Features:
+    - System scanning for CIS benchmarks.
+    - Direct configurations to address compliance issues.
+    - Logging of configuration changes and scan results.
+    - User-friendly menu interface for easy navigation.
+    
+    Usage:
+    1. Run the script and choose between scanning for compliance or conducting direct configurations.
+    2. Select specific benchmarks or services to scan or configure.
+    3. Follow the prompts to complete the selected actions.
+    4. View logs for a detailed record of configuration changes and scan results.
+    
+    Note: Make sure to review the documentation for detailed instructions and best practices.
+    
+    Author: CB010695, CB010736, CB010830, CB010837   
+    Version: 2.2.3
     \033[91m""")
 
 
@@ -59,15 +82,17 @@ def log_setup():
     log_file_path = "script_log.txt"
     current_date = datetime.now().strftime("%Y-%m-%d")
     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    header = f"{'-'*70}\nCIS Compliance Suite Logging\n{'-'*70}\n"
+
     if not os.path.exists(log_file_path):
         with open(log_file_path, "w") as log_file:
-            log_file.write(f"-----------------------------------------------------------------------\n")
-            log_file.write(f"                           CIS Compliance SUITE LOGGING                         \n")
-            log_file.write(f"-----------------------------------------------------------------------\n")
+            log_file.write(header)
             log_file.write(f"{current_datetime} - ============ SCRIPT INITIATION ============\n")
     else:
         with open(log_file_path, "a") as log_file:
-            log_file.write(f"\n{current_datetime} - ============ SCRIPT Execution ============\n")
+            log_file.write(f"{current_datetime} - ============ SCRIPT Execution ============\n")
+
 
 def log_changes(changes,control):
 
@@ -75,11 +100,11 @@ def log_changes(changes,control):
     if control == "ufw":
         log_ufw.append(changes)
     elif control == "services":
-        log_ufw.append(changes)
+        log_services.append(changes)
     elif control == "passwords":
-        log_ufw.append(changes)
+        log_passwords.append(changes)
     elif control == "patching":
-        log_ufw.append(changes)
+        log_patching.append(changes)
 
 def log_category(control):
     log_file_path = "script_log.txt"
@@ -111,117 +136,65 @@ def log_category(control):
             for line in enumerate(log_patching):
                 log_file.write(f"{line}")
 
-# def Log_control():
-#     global current_datetime
-#     log_file_path = "script_log.txt"
-#     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#     if not os.path.exists(log_file_path):
-#         with open(log_file_path, "w") as log_file:
-#             log_file.write(f"-----------------------------------------------------------------------\n")
-#             log_file.write(f"                           CIS Compliance SUITE LOGGING                         \n")
-#             log_file.write(f"-----------------------------------------------------------------------\n")
-#             log_file.write(f"{current_datetime} - ============ SCRIPT INITIATION ============\n")
-#     else:
-#         with open(log_file_path, "a") as log_file:
-#             log_file.write(f"{current_datetime} - ============ SCRIPT Execution ============\n")
-
-
-
 
 def control_or_date_log():
     try:
-        choice = int(input("""
-    \033[91m|==================== Log Options ====================|\033[0m
-    Enter your choice as index:
-    1) date
-    2) control: """))
-        control = ["UFW CONFIGURATIONS", "SERVICES CONFIGURATIONS", "PASSWORD CONFIGURATIONS",
-                   "PATCHING CONFIGURATIONS"]
-        if choice == 1:
-            output_filepath = current_date + ".txt"
-            with open(output_filepath, 'w') as output_file:
-                for lines in enumerate(log_ufw):
-                    output_file.writelines(lines)
-                for lines in enumerate(log_services):
-                    output_file.writelines(lines)
-                for lines in enumerate(log_passwords):
-                    output_file.writelines(lines)
-                for lines in enumerate(log_patching):
-                    output_file.writelines(lines)
-        elif choice == 2:
-            flag = False
-            for i in range(len(control)):
-                output_filepath = (control[i]) + ".txt"
-                if control[i] == "UFW CONFIGURATIONS":
-                    with open(output_filepath, 'a') as output_file:
-                        for line in enumerate(log_ufw):
-                            output_filepath.write(f"{str(line)}")
-                        flag = True
-                elif control[i] == "SERVICES CONFIGURATIONS":
-                    with open(output_filepath, 'a') as output_file:
-                        for lines in enumerate(log_services):
-                            output_file.write(f"{str(line)}")
-                        flag = True
-                elif control[i] == "PASSWORD CONFIGURATION":
-                    with open(output_filepath, 'a') as output_file:
-                        for lines in enumerate(log_passwords):
-                            output_file.write(f"{str(line)}")
-                        flag = True
-                elif control[i] == "PATCHING CONFIGURATIONS":
-                    with open(output_filepath, 'a') as output_file:
-                        for lines in enumerate(log_patching):
-                            output_file.write(f"{str(line)}")
-                        flag = True
-            if flag:
-                print("Log generated successfully")
-            elif not flag:
-                print("Log not generated")
-        elif choice is None:
-            print("Please choose either date or control")
-            raise ValueError("Please choose either date or control")
-
-    except ValueError as ve:
-        print("Error:", ve)
-    except TypeError as ve:
-        print("Error:", ve)
-    except AttributeError as ve:
-        print("Error:", ve)
-
-
-
-# def Log_options_check():
-#     try:
-#
-#         if choice == 1:
-#             control_or_date_log("1")
-#         elif choice == 2:
-#             control_or_date_log("2")
-#         else:
-#             raise ValueError("Please choose either date or control")
-#     except ValueError as ve:
-#         print("Error:", ve)
-#     except TypeError as ve:
-#         print("Error:", ve)
-#     except AttributeError as ve:
-#         print("Error:", ve)
-
-
-def log_options():
-    try:
         print("""
-    \033[91m|==================== Log Options ====================|\033[0m""")
-        print("\nDo you want to generate a log report")
-        var = y_n_choice()
-        var.lower()
-        if var == 'y' or var == 'yes' or var == '':
-            control_or_date_log()
-            print("\nExiting...")
-        elif var == 'n' or var == 'no':
-            print("\nExiting...")
-            ###time.sleep(1)
-        elif var is None:
-            print("Error: Result is None.")
-            return
+        \033[91m|==================== Logger ====================|\033[0m
+        Do you want to generate a log report?
+        """)
+        choice=y_n_choice().lower()
+        if choice == 'y' or choice == 'yes' or choice == '':
+            choice = int(input("""
+        \033[91m|==================== Log Options ====================|\033[0m
+        Enter your choice:
+        1) Log by date
+        2) Log by control
+    
+        Please enter the index of your choice: """))
+
+            if choice == 1:
+                output_filepath = f"{current_date}.txt"
+                with open(output_filepath, 'w') as output_file:
+                    for lines in enumerate(log_ufw):
+                        output_file.writelines(f"{str(lines)}\n")
+                    for lines in enumerate(log_services):
+                        output_file.writelines(f"{str(lines)}\n")
+                    for lines in enumerate(log_passwords):
+                        output_file.writelines(f"{str(lines)}\n")
+                    for lines in enumerate(log_patching):
+                        output_file.writelines(f"{str(lines)}\n")
+            elif choice == 2:
+                flag = False
+                log_mapping = {
+                    "UFW CONFIGURATIONS": log_ufw,
+                    "SERVICES CONFIGURATIONS": log_services,
+                    "PASSWORD CONFIGURATION": log_passwords,
+                    "PATCHING CONFIGURATIONS": log_patching
+                }
+                for control, log_list in log_mapping.items():
+                    output_filepath = f"{control}.txt"
+                    with open(output_filepath, 'a') as output_file:
+                        for lines in log_list:
+                            output_file.writelines(f"{str(lines)}\n")
+                    flag = True
+
+                if flag:
+                    print("Log generated successfully")
+                else:
+                    print("Log not generated")
+                if flag:
+                    print("Log generated successfully")
+                elif not flag:
+                    print("Log not generated")
+            elif choice is None:
+                print("Please choose either date or control")
+                raise ValueError("Please choose either date or control")
+        else:
+            print("Please enter a valid input")
+            raise ValueError("Please enter a valid input")
+        return
+
     except ValueError as ve:
         print("Error:", ve)
     except TypeError as ve:
@@ -230,51 +203,15 @@ def log_options():
         print("Error:", ve)
 
 
-# ================================= Special Services Section ====================================
 
+def scan_log(prompt):
+    output_filepath = f"scan_log.txt"
+    with open(output_filepath, 'w') as output_file:
+        output_file.writelines(f"{prompt}\n")
+
+
+# ================================= Services =================================== Services =========================== Services =================================== Services ========== Services =================================== Services ====
 colorama_init()
-
-
-
-
-#
-# def services_report_head():
-#     line=("\n")
-#     line=("====================================================================================\n")
-#     line=("                                  Services Compliance                               \n")
-#     line=("====================================================================================\n")
-# 
-# 
-# def scan_services_report_head():
-#     line=("\n")
-#     line=("====================================================================================\n")
-#     line=("                                  Services Scan                                     \n")
-#     line=("====================================================================================\n")
-# 
-# 
-# def services_output_head():
-#     print(
-#         f"{Fore.RED}=============================== Services Compliance =============================={Style.RESET_ALL}\n")
-# 
-# 
-# def scan_services_output_head():
-#     print(f"{Fore.RED}=============================== Services Scan =============================={Style.RESET_ALL}\n")
-# 
-# 
-# def runningservices_output_head():
-#     print(
-#         f"\n{Fore.RED}================================ Running Services =============================={Style.RESET_ALL}\n")
-#     line=(
-#         f"\n{Fore.RED}================================ Running Services =============================={Style.RESET_ALL}\n")
-# 
-# 
-# def scan_runningservices_output_head():
-#     print(
-#         f"\n{Fore.RED}================================ Running Services =============================={Style.RESET_ALL}\n")
-#     line=(
-#         f"\n{Fore.RED}================================ Running Services =============================={Style.RESET_ALL}\n")
-
-
 def ask(name):
     while True:
         choice = input(
@@ -417,7 +354,7 @@ def scan_xserver():
         log_changes(line,"services")
     else:
         print("- X Windows System is not installed. No action is needed.\n")
-        line = "X Windows Systtem is not install. No action is needed.\n"
+        line = "X Windows System is not install. No action is needed.\n"
         log_changes(line,"services")
 
 
@@ -690,7 +627,7 @@ def purge_dhcp():
 
 def purge_ldap():
     if check_ldap():
-        if ask("Lightweight Directory Acesss Protocol"):
+        if ask("Lightweight Directory Access Protocol"):
             print(
                 f"- Lightweight Directory Access Protocol is installed.{Fore.RED} Proceeding to uninstall...{Style.RESET_ALL}\n")
             line = (
@@ -698,11 +635,11 @@ def purge_ldap():
             log_changes(line,"services")
             os.system("apt purge slapd")
         else:
-            print("Lightweight Directory Access Protocl was not removed due to user input.\n")
+            print("Lightweight Directory Access Protocol was not removed due to user input.\n")
             line = ("Lightweight Directory Access Protocol was not removed due to user input\n")
             log_changes(line,"services")
     else:
-        print("- Lightweight Directory Access Protcol is not installed. No action is needed.\n")
+        print("- Lightweight Directory Access Protocol is not installed. No action is needed.\n")
         line = ("Lightweight Directory Access Protocol is not installed. No action needed\n")
         log_changes(line,"services")
 
@@ -1001,7 +938,7 @@ def purge_ldap_utils():
 
     else:
         print("- LDAP Client is not installed. No action needed.\n")
-        line = ("LDAP Client is not installed. No action needed.\n")
+        line = "LDAP Client is not installed. No action needed.\n"
         log_changes(line,"services")
 
 
@@ -1034,7 +971,7 @@ def check_non_services():
 
         for index, line in enumerate(lines[1:], start=1):
             print(f"Index {index}: {line}")
-            line = ("Index {index}: {line}\n")
+            line = "Index {index}: {line}\n"
             log_changes(line,"services")
     else:
         print(f"Error running command: {result.stderr}")
@@ -1052,14 +989,13 @@ def check_non_services_scan():
 
         for index, line in enumerate(lines[1:], start=1):
             print(f"Index {index}: {line}")
-            line = ("Index {index}: {line}\n")
+            line = "Index {index}: {line}\n"
             log_changes(line,"services")
     else:
         print(f"Error running command: {result.stderr}")
     print("\n")
 
-
-# ==================================== Firewall Configuration Section ====================================================================== Firewall Configuration Section ======================================================== Firewall Configuration Section ===============================================================================
+# ==================================== U F W  =========================== U F W  ============================ U F W  ================================ U F W  =========================== U F W  ============================ U F W  ======================================= U F W  =========================== U F W  ============================ U F W  ================================ U F W  =========================== U F W  ============================ U F W  ================================
 def noufwbanner():
     print("CIS recommends installing ufw; proceed with the installation in the configure section.")
     return
@@ -1316,7 +1252,6 @@ def ensure_loopback_configured():
         noufwbanner()
 
 
-# check if ufw outbound connections are Pre-set
 def is_ufw_outbound_connections_configured():
     try:
         result = subprocess.run("ufw status", shell=True, capture_output=True, text=True)
@@ -1665,7 +1600,45 @@ def ufw_configure():
     except KeyboardInterrupt:
         print("\n\nExited unexpectedly...")
 
+#======================= PAM ======================= PAM ============================ PAM ======================= PAM ============================== PAM ======================= PAM ============================ PAM ======================= PAM =======================
+def pam_scan():
+    try:
+            print("""
+        \033[91m|============== Scanning PAM on your system ==============|\033[0m""")
 
+    except ValueError as ve:
+        print("Error:", ve)
+    except TypeError as ve:
+        print("Error:", ve)
+
+def pam_configure():
+    try:
+            print("""
+        \033[91m|============== Configuring PAM on your system ==============|\033[0m""")
+
+    except ValueError as ve:
+        print("Error:", ve)
+    except TypeError as ve:
+        print("Error:", ve)
+#======================= Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates ================================================ Patches & Updates =========================
+def patches_scan():
+    try:
+            print("""
+        \033[91m|============== Scanning Patches & Updates on your system ==============|\033[0m""")
+
+    except ValueError as ve:
+        print("Error:", ve)
+    except TypeError as ve:
+        print("Error:", ve)
+def patches_configure():
+    try:
+            print("""
+        \033[91m|============== Configuring Patches & Updates on your system ==============|\033[0m""")
+
+    except ValueError as ve:
+        print("Error:", ve)
+    except TypeError as ve:
+        print("Error:", ve)
 # ============================================ Main Functions ======================================
 
 def services_scan():
@@ -1773,89 +1746,66 @@ def scan_running_services_action():
 def services_purge_main():
     services_configure()
     running_services_action()
-    line = ("\n")
-
 
 
 def services_scan_main():
     services_scan()
     scan_running_services_action()
 
+def scan_all_benchmarks():
+    services_scan_main()
+    ufw_scan()
+    pam_scan()
+    patches_scan()
+    ###time.sleep(1)
+def configure_all_benchmarks():
+    services_purge_main()
+    log_category("services")
+    ufw_configure()
+    log_category("ufw")
+    pam_configure()
+    log_category("pam")
+    patches_configure()
+    log_category("patches")
+    time.sleep(1)
+    control_or_date_log()
+    ###time.sleep(1)
 
-
-# Firewall Main Functions
-
-# def firewall_main():
-#     try:
-#         log_setup("ufw")
-#         scan_or_config()
-#         log_options()
-#     except FileNotFoundError:
-#         noufwbanner()
-#     except KeyboardInterrupt:
-#         print("\n\nExited unexpectedly...")
-
-
-# End of Firewall Main Functions
-
-def configure_options():
+def configure_option():
     while True:
         try:
             choice = options_for_scanning_or_configuration("configuration")
-            if choice == "1":
-                conf_choice = input("You have Chosen an All Benchmark configurations. Are you Sure? y/n ")
-                if conf_choice.lower() == "y":
-                    services_purge_main()
-                    log_category("services")
-                    ufw_configure()
-                    log_category("ufw")
-                    #pam_configure()
-                    #log_category("pam")
-                    #patches_configure()
-                    #log_category("patches")
-                    ###time.sleep(1)
-                    control_or_date_log()
-                    input("\nHit enter to continue to home page: ")
+            if choice in ("1", "2", "3","4","5"):
+                configure_type = {
+                    "1": "All Benchmarks",
+                    "2": "Special Services",
+                    "3": "Firewall",
+                    "4": "Password Authentication Management",
+                    "5": "Patches & Updates"
+                }[choice]
+                if get_confirmation(f"\nYou have chosen {configure_type}. Are you sure?"):
+                    if choice == "1":
+                        configure_all_benchmarks()
+                    elif choice == "2":
+                        services_purge_main()
+                    elif choice == "3":
+                        ufw_configure()
+                    elif choice == "4":
+                        pam_configure()
+                    elif choice == "5":
+                        patches_configure()
+                    elif choice.lower() == "b":
+                        print("\nYou have canceled your action.\n")
+                        return False
+                    input("\nHit enter to continue to the home page: ")
                     home_main()
-
-                elif conf_choice.lower() == "n":
+                    return True
+                else:
                     print("\nYou have canceled your action.\n")
-                    configure_options()
-                else:
-                    print("\nPLEASE ENTER A VALID INPUT")
-                    configure_options()
-            elif choice == "2":
-                conf_choice = input("\nYou have chosen Special Services. Are you Sure? y/n ")
-                if conf_choice.lower() == "y":
-                    services_purge_main()
-                    ###time.sleep(1)
-                    input("\nHit enter to continue to home page: ")
-                    home_main()
-
-                elif conf_choice.lower() == "n":
-                    print("\nYou have canceled your action.\n")
-                    configure_options()
-                else:
-                    print("\nPLEASE ENTER A VALID INPUT")
-                    configure_options()
-            elif choice == "3":
-                conf_choice = input("\nYou have chosen Firewall. Are you sure? y/n ")
-                if conf_choice.lower() == "y":
-                    ufw_configure()
-                    ###time.sleep(1)
-                    ###time.sleep(1)
-                    input("\nHit enter to continue to home page: ")
-                    home_main()
-                elif conf_choice.lower() == "n":
-                    print("\n You have canceled your action.\n")
-                    configure_options()
-                else:
-                    print("\nPLEASE ENTER A VALID INPUT")
-                    configure_options()
-            elif choice.lower() == "b":
-                home_main()
+                    return False
             elif choice.lower() == "e":
                 print("\nYou have exited the script :( \n")
+                return True
             else:
                 print(f"{Fore.RED}PLEASE ENTER A VALID INPUT.{Style.RESET_ALL}\n")
         except KeyboardInterrupt:
@@ -1863,58 +1813,56 @@ def configure_options():
         except Exception as e:
             print("Error:", e)
 
+def capture_function_output():
+    output_variable = io.StringIO()
+
+    with redirect_stdout(output_variable):
+        result = scan_all_benchmarks()
+
+    printed_output = output_variable.getvalue()
+
+    return result, printed_output
+
 
 
 def scan_option():
     while True:
         try:
             choice = options_for_scanning_or_configuration("scan")
-            if choice == "1":
-                while True:
-                    conf_choice = input("\nYou have chosen All Benchmarks. Are you Sure? y/n ")
-                    if conf_choice.lower() == "y":
-                        print("\nYou have chosen All Benchmarks Scan. Proceeding with scan...\n")
-                        services_scan_main()
-                        ufw_scan()
-                        ###time.sleep(1)
-                        input("\nHit enter to continue to home page: ")
-                        home_main()
-                        return True
-                    elif conf_choice.lower() == "n":
+            if choice in ("1", "2", "3","4","5"):
+                scan_type = {
+                    "1": "All Benchmarks",
+                    "2": "Special Services",
+                    "3": "Firewall",
+                    "4": "Password Authentication Management",
+                    "5": "Patches & Updates"
+                }[choice]
+                if get_confirmation(f"\nYou have chosen {scan_type}. Are you sure?"):
+                    if choice == "1":
+                        captured_result, captured_output = capture_function_output()
+                        scan_log(captured_output)
+                        control_or_date_log()
+                    elif choice == "2":
+                        scan_log((str(services_scan_main())))
+                        control_or_date_log()
+                    elif choice == "3":
+                        scan_log(ufw_scan())
+                        control_or_date_log()
+                    elif choice == "4":
+                        scan_log(pam_scan())
+                        control_or_date_log()
+                    elif choice == "5":
+                        scan_log(patches_scan())
+                        control_or_date_log()
+                    elif choice.lower() == "b":
                         print("\nYou have canceled your action.\n")
                         return False
-                    else:
-                        print("\nPLEASE ENTER A VALID INPUT")
-            elif choice == "2":
-                while True:
-                    conf_choice = input("\nYou have chosen Special Services. Are you Sure? y/n ")
-                    if conf_choice.lower() == "y":
-                        print("\nYou have chosen Special Services Scan. Proceeding with scan...\n")
-                        services_scan_main()
-                        ###time.sleep(1)
-                        input("\nHit enter to continue to home page: ")
-                        home_main()
-                        return True
-                    elif conf_choice.lower() == "n":
-                        print("\nYou have canceled your action.\n")
-                        return False
-                    else:
-                        print("\nPLEASE ENTER A VALID INPUT")
-            elif choice == "3":
-                while True:
-                    conf_choice = input("\nYou have chosen Firewall. Are you sure? y/n ")
-                    if conf_choice.lower() == "y":
-                        print("\nYou have chosen Firewall Scan. Proceeding with scan.../n")
-                        ufw_scan()
-                        ###time.sleep(1)
-                        input("\nHit enter to continue to home page: ")
-                        home_main()
-                        return True
-                    elif conf_choice.lower() == "n":
-                        print("\n You have canceled your action.\n")
-                        return False
-                    else:
-                        print("\nPLEASE ENTER A VALID INPUT")
+                    input("\nHit enter to continue to the home page: ")
+                    home_main()
+                    return True
+                else:
+                    print("\nYou have canceled your action.\n")
+                    return False
             elif choice.lower() == "e":
                 print("\nYou have exited the script :( \n")
                 return True
@@ -1926,33 +1874,73 @@ def scan_option():
             print("Error:", e)
 
 
+def home_banner():
+    choice = input("""
+    |=================== CIS Compliance Suite ====================|
+
+    Please choose one of the following options:
+    1 - Scan for compliance.
+    2 - Conduct Direct Configurations.
+    e - Exit the Script
+    
+    Enter your choice: """)
+    if choice.lower() == "e":
+        print("\nYou have exited the script :( \n")
+        exit()
+        return True
+    else:
+        return choice
+
+
+
+def options_for_scanning_or_configuration(option):
+    while True:
+        try:
+            choice = input(f""" 
+    \033[91m|========== Choose an option for {option} ===========|\033[0m
+    1 - All Benchmarks
+    2 - Special Services
+    3 - Firewall
+    4 - Password Authentication Management
+    5 - Patches & Updates
+    b - Go Back
+    e - Exit Scan
+
+    Please enter the number of the Scan you wish to conduct: """)
+            if choice.lower() not in ['1', '2', '3', '4', '5', 'b', 'e']:
+                raise ValueError("Invalid input. Please enter a valid index.")
+
+            return choice.lower()
+        except ValueError as ve:
+            print(f"Error: {ve}")
+        except TypeError as ve:
+            print(f"Error: {ve}")
+        except AttributeError as ve:
+            print(f"Error: {ve}")
+
+def get_confirmation(prompt):
+    while True:
+        conf_choice = input(f"{prompt} (y/n): ").lower()
+        if conf_choice == "y":
+            return True
+        elif conf_choice == "n":
+            print("\nYou have canceled your action.\n")
+            return False
+        else:
+            print("\nPLEASE ENTER A VALID INPUT\n")
 
 def home_main():
     while True:
         try:
             choice = home_banner()
             if choice == "1":
-                while True:
-                    conf_choice = input("\nYou have chosen System Scanning. Are you Sure? y/n ")
-                    if conf_choice.lower() == "y":
-                        scan_option()
-                        return True
-                    elif conf_choice.lower() == "n":
-                        print("\nYou have canceled your action.\n")
-                        return False
-                    else:
-                        print("\nPLEASE ENTER A VALID INPUT\n")
+                if get_confirmation("\nYou have chosen System Scanning. Are you Sure?"):
+                    scan_option()
+                    return True
             elif choice == "2":
-                while True:
-                    conf_choice = input("\nYou have chosen to Configure the system. Are you Sure? y/n ")
-                    if conf_choice.lower() == "y":
-                        configure_options()
-                        return True
-                    elif conf_choice.lower() == "n":
-                        print("\nYou have canceled your action.\n")
-                        return False
-                    else:
-                        print("\nPLEASE ENTER A VALID INPUT\n")
+                if get_confirmation("\nYou have chosen to Configure the system. Are you Sure?"):
+                    configure_option()
+                    return True
             elif choice.lower() == "e":
                 print("\nYou have exited the script :( \n")
                 exit()
@@ -1964,37 +1952,18 @@ def home_main():
 
 
 
-def options_for_scanning_or_configuration(type):
-    choice = input(f"""\n== Please choose one of the following {type} that you wish to conduct! ==")
-    1 - All Benchmarks.
-    2 - Special Services.
-    3 - Firewall.
-    4 - Password Authentication Management.
-    5 - Patches & Updates.
-    b - Go Back.
-    e - Exit Scan.
-    Please enter the number of the Scan you wish to conduct: """)
-    return choice
 
 
-def home_banner():
-    banner()
-    choice = input("""
-    \033[91m|=============== CIS Compliance Suite ===============|
-    Please Choose one of the following options that you wish to conduct!\n\033[0m
-    1 - Scan for compliance.\n
-    2 - Conduct Direct Configurations.\n
-    e - Exit the Script\n """)
-    return choice
+
+
+
+
 
 
 
 def main():
     try:
-        global log_ufw
-        global log_services
-        global log_passwords
-        global log_patching
+        banner()
         log_setup()
         home_main()
     except KeyboardInterrupt:
@@ -2005,49 +1974,7 @@ def main():
 
 
 
-
-
-# def scan_or_config():
-#     print("""
-#     \033[91m|============= UFW CIS Compliance Control=============|\033[0m""")
-#     print("\nDo you want to scan your system configurations press no to continue configuring: ")
-#     var = y_n_choice()
-#     var.lower()
-#     if var == 'y' or var == 'yes' or var == '':
-#         scan_system_configuration()
-#         print("\nExiting...")
-#         ###time.sleep(1)
-#         # ask the user if he needs to do the configurations
-#         print("\nDo you want to continue to configurations")
-#         var = y_n_choice()
-#         var.lower()
-#         if var == 'y' or var == 'yes' or var == '':
-#             all_ufw_hardening_controls()
-#             print("\n\033[91mPress enter to exit the code [enter] \033[0m")
-#             input()
-#             print("\nExiting...")
-#             ###time.sleep(1)
-#         if var == 'n' or var == 'no':
-#             print("\nExiting...")
-#             ###time.sleep(1)
-#         elif var is None:
-#             print("Error: Result is None.")
-#             return
-#     elif var == 'n' or var == 'no':
-#         print("\nContinuing to configurations...")
-#         all_ufw_hardening_controls()
-#         ###time.sleep(1)
-#         return
-#     elif var is None:
-#         print("Error: Result is None.")
-#         return
-
-
-
-
 main()
 
-# report_file.close()
-# scan_report_file.close()
 
 # ============================================ End of Script ======================================
