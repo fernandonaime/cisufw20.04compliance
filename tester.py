@@ -1190,7 +1190,7 @@ def is_loopback_interface_configured():
             print("All loopback rules are configured.")
             return True
         else:
-            print("\033[91mThe following Loopback rules are not configured:")
+            print("\033[91m\U000026D4The following Loopback rules are not configured:\U000026D4")
             for unconfigured_rule in unconfigured_rules:
                 print("\033[33m", unconfigured_rule, "\033[0m")
             return False
@@ -1262,7 +1262,7 @@ def is_ufw_outbound_connections_configured():
             print("The following outbound rule is configured: ufw allow out on all")
             return True
         else:
-            print("\033[91mThe following outbound rule is not configured: ufw allow out on all")
+            print("\033[91m\U000026D4The following outbound rule is not configured: ufw allow out on all\U000026D4")
             return False
     except FileNotFoundError:
         noufwbanner()
@@ -1520,7 +1520,7 @@ def ensure_default_deny_policy():
             """
             log_changes(line, "ufw")
         elif var == 'n' or var == 'no':
-            line = "\nDEFAULT-DENY-POLICY: no"
+            line = "\n\U000026D4DEFAULT-DENY-POLICY: no\U000026D4"
             log_changes(line, "ufw")
             print("\nexiting port deny policy...")
         elif var is None:
@@ -1544,22 +1544,22 @@ def ufw_scan():
         if is_ufw_installed():
             print("UFW is installed.")
         else:
-            print("\033[91mUFW is not installed.\033[0m")
+            print("\033[91m\U000026D4UFW is not installed.\U000026D4\033[0m")
         # time.sleep(1)
         if is_iptables_persistent_installed():
-            print("\033[91mIptables-persistent packages are not removed.\033[0m")
+            print("\033[91m\U000026D4Iptables-persistent packages are not removed.\U000026D4\033[0m")
         else:
             print("Iptables-persistent packages are removed.")
         # time.sleep(1)
         if is_ufw_enabled():
             print("UFW is enabled.")
         else:
-            print("\033[91mUFW is not enabled.\033[0m")
+            print("\033[91m\U000026D4UFW is not enabled.\U000026D4\033[0m")
         # time.sleep(1)
         if is_default_deny_policy():
             print("Default deny policy is configured.")
         else:
-            print("\033[91mDefault deny policy is not configured.\033[0m")
+            print("\033[91m\U000026D4Default deny policy is not configured.\U000026D4\033[0m")
         # time.sleep(1)
         is_loopback_interface_configured()
         # time.sleep(1)
