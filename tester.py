@@ -2117,6 +2117,9 @@ def patches_scan():
 # ============================================ Main Functions ======================================
 
 def services_scan():
+    print("""
+        
+    \033[91m|============= Scanning Services on your system ==============|\033[0m""")
     # time.sleep(1)
     scan_xserver()
     # time.sleep(1)
