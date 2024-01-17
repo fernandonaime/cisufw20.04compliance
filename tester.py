@@ -120,8 +120,8 @@ def log_category(control):
             log_file.write(f"-----------------------------------------------------------------------\n")
             log_file.write(f"                           UFW CONFIGURATIONS                          \n")
             log_file.write(f"-----------------------------------------------------------------------\n")
-            for line in log_ufw:
-                log_file.write(f"{line}")
+            for lines in enumerate(log_ufw):
+                log_file_path.writelines(f"{str(lines)}\n")
         elif control == "services":
             log_file.write(f"-----------------------------------------------------------------------\n")
             log_file.write(f"                           SERVICES CONFIGURATIONS                          \n")
@@ -2354,20 +2354,23 @@ def configure_option():
                         control_or_date_log()
                     elif choice == "2":
                         services_purge_main()
+                        log_category("services")
                         #clear_screen()
                         control_or_date_log()
                     elif choice == "3":
                         ufw_configure()
-                        time.sleep(1)
+                        log_category("ufw")
                         #clear_screen()
                         control_or_date_log()
                     elif choice == "4":
                         pam_configure()
+                        log_category("pam")
                         time.sleep(1)
                         #clear_screen()
                         control_or_date_log()
                     elif choice == "5":
                         patches_configure()
+                        log_category("patches")
                         #clear_screen()
                         control_or_date_log()
             elif choice.lower() == "e":
