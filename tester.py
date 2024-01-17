@@ -118,7 +118,7 @@ def log_category(control):
     with open(log_file_path, "a") as log_file:
         if control == "ufw":
             log_file.write(f"-----------------------------------------------------------------------\n")
-            log_file.write(f" {cu}                          UFW CONFIGURATIONS                          \n")
+            log_file.write(f"                           UFW CONFIGURATIONS                          \n")
             log_file.write(f"-----------------------------------------------------------------------\n")
             for line in log_ufw:
                 log_file.write(f"{line}")
