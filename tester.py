@@ -47,6 +47,10 @@ def banner():
     Authors: CB010695, CB010736, CB010830, CB010837   
     Version: 2.2.3
     \033[91m""")
+    input("\n Press Enter to continue...")
+def clear_screen():
+    time.sleep(1)
+    os.system('clear')
 
 
 def y_n_choice():
@@ -154,7 +158,7 @@ def control_or_date_log():
     Please enter the index of your choice: """)
             choice = int(choice)
             if choice == 1:
-                output_filepath = f"/logs/{current_date}.log"
+                output_filepath = f"{current_date}.log"
                 with open(output_filepath, 'w') as output_file:
                     for lines in enumerate(log_ufw):
                         output_file.writelines(f"{str(lines)}\n")
@@ -188,7 +192,9 @@ def control_or_date_log():
 
         elif choice == 'n' or choice == 'no':
             print("No log generated")
+
             home_main()
+            return True #without this true the function will keep on doing configurations which is also a good thing.
         else:
             print("Invalid choice. Please enter either 'yes' or 'no'.")
 
@@ -2241,6 +2247,7 @@ def configure_all_benchmarks():
     # time.sleep(1)
 
 def home_banner():
+    clear_screen()
     choice = input("""
     |==\U0001F3E0======= CIS Compliance Suite ====================|
 
@@ -2339,18 +2346,25 @@ def configure_option():
                 if get_confirmation(f"\nYou have chosen {configure_type}. Are you sure?"):
                     if choice == "1":
                         configure_all_benchmarks()
+                        #clear_screen()
                         control_or_date_log()
                     elif choice == "2":
                         services_purge_main()
+                        #clear_screen()
                         control_or_date_log()
                     elif choice == "3":
                         ufw_configure()
+                        time.sleep(1)
+                        #clear_screen()
                         control_or_date_log()
                     elif choice == "4":
                         pam_configure()
+                        time.sleep(1)
+                        #clear_screen()
                         control_or_date_log()
                     elif choice == "5":
                         patches_configure()
+                        #clear_screen()
                         control_or_date_log()
             elif choice.lower() == "e":
                 print("\nYou have exited the script :( \n")
@@ -2434,6 +2448,7 @@ def scan_option():
 def options_for_scanning_or_configuration(option):
     while True:
         try:
+            clear_screen()
             choice = input(f""" 
     \033[91m|================ Choose an option for {option} ==============|\033[0m
     1 - All Benchmarks
