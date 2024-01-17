@@ -118,26 +118,26 @@ def log_category(control):
     with open(log_file_path, "a") as log_file:
         if control == "ufw":
             log_file.write(f"-----------------------------------------------------------------------\n")
-            log_file.write(f" {current_datetime}        UFW CONFIGURATIONS                          \n")
+            log_file.write(f" {cu}                          UFW CONFIGURATIONS                          \n")
             log_file.write(f"-----------------------------------------------------------------------\n")
             for line in log_ufw:
                 log_file.write(f"{line}")
         elif control == "services":
             log_file.write(f"-----------------------------------------------------------------------\n")
-            log_file.write(f" {current_datetime}      SERVICES CONFIGURATIONS                       \n")
+            log_file.write(f"                           SERVICES CONFIGURATIONS                          \n")
             log_file.write(f"-----------------------------------------------------------------------\n")
             for line in log_services:
                 log_file.write(f"{line}")
         elif control == "passwords":
             log_file.write(f"-----------------------------------------------------------------------\n")
-            log_file.write(f" {current_datetime}     PASSWORD CONFIGURATIONS                        \n")
+            log_file.write(f"                           PASSWORD CONFIGURATIONS                          \n")
             log_file.write(f"-----------------------------------------------------------------------\n")
             for line in log_passwords:
                 log_file.write(f"{line}")
 
         elif control == "patching":
             log_file.write(f"-----------------------------------------------------------------------\n")
-            log_file.write(f" {current_datetime}     PATCHING CONFIGURATIONS                        \n")
+            log_file.write(f"                           PATCHING CONFIGURATIONS                          \n")
             log_file.write(f"-----------------------------------------------------------------------\n")
             for line in enumerate(log_patching):
                 log_file.write(f"{line}")
