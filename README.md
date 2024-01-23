@@ -24,7 +24,7 @@ To run the CIS Compliance Suite on your Ubuntu Live Server, follow these steps:
 2. Execute the main script with sudo:
 
     ```bash
-    sudo python tester.py
+    sudo python3 tester.py
     ```
 
 3. Follow the on-screen instructions to harden the operating system.
