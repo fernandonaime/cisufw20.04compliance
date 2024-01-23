@@ -1,4 +1,4 @@
-# CIS Compliance Suite for Ubuntu Live Servers
+# CIS UFW Compliance Suite for Ubuntu Live Servers
 
 ## Overview
 
