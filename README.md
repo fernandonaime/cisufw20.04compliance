@@ -18,13 +18,13 @@ To run the CIS Compliance Suite on your Ubuntu Live Server, follow these steps:
 
     ```bash
     git clone https://github.com/fernandonaime/debian20.04compliance.git
-    cd CIS-Compliance-Suite
+    cd debian20.04compliance
     ```
 
-2. Execute the main script:
+2. Execute the main script with sudo:
 
     ```bash
-    python tester.py
+    sudo python tester.py
     ```
 
 3. Follow the on-screen instructions to harden the operating system.
